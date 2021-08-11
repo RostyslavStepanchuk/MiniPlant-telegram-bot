@@ -1,15 +1,17 @@
 dist: xenial
 language: java
 jdk: openjdk11
+
 cache:
   directories:
   - "$HOME/.m2"
   - "$HOME/.sonar/cache"
+
 addons:
   sonarcloud:
     organization: facebook-final-project
     token:
-      secure: "mJ85FxG6ld7R4PvIxgPJZjk4pxrFH8hsy/M61cawqwBIcbOlWERsKuXhZGvhpQO1yLRcdm7ctvArmtsLkA/Xr02BfK1Fj4jTr74Px3K5BO8znr7w5hBZyeZyNNFSO9pZiBwAwMPghuT6Rq7n6CDmsbO7ltzo1olQyKgEa/JKQ6hZ7bHwoL15pJonFAn7l8tpSIFGa1pPClfUC1RLDN9Zklwvzh9KZuuyOwxD7rV+aV5Mf5w2D34MO7YHYfZ+ZkluNaZ4YrVgr/JwcBLO3jIQe+i3+uBAM4UumyMerBI4mwHYp2XWGbEMjdabAqKN2Nllk2og8Jc/rY0KklORe5M7BCekKhEaGbtiDAhu0UvJBVd6lsHJhJHKD+BcB/lXztzEHaNjnTStj+JqhWP03+kjJufxkz87l2Z/UnoSntAEUxcE2OFMcM0NP+5baM04DSuFYUB0tpDuCsZvQ050fGDGDN1sWbpdWfjMJpFRzKpfXsp9kWk41JYAOp8uuLw2ZD0VGo8TZJNXmF9221WtFVy3b6//MD9BEaHeh6ufUjQRMMsGGkYBjGY2iZQPnXDA8D4kOazeggqdK1/Xjbta+3g8rgq+U30x1LmZ5zhUfxK/v4n31vAv81Z3m+bMFGdh07YQT736bOwaO7vDczMLk1j8N8nN7wcs0Ug6ZLejz2KT8VM="
+      secure: "aAX0u+NGOoDOasiHTazSGwxfssCokGstvh4Ue3cMq63ZxFDVu0LLc+G3PhxW8VR1Hqz/8ZBitStxVkTPUkApgfxZ/kqEe0poi3fqF+rCh+pRAANf2fVxDQiPYw6o2PM/0jEJFUXXZPfUP/uKVXVA4NwybdqFzCbmOend+KczhjqpwT/21ubgwIjiJ6X7eyimpY2JN4pGc++z4+gu5y3GsVAVuKs4Qe/2Ky5QgiD2kPVhDFqYDKRoNY1yrCF2jBXOe8JsVxLUHDJdUDVlUntKr9OpdhZX7khcpaynP19a6RKgYrsfOyxVP5KCUGAxSg+TCYjd2ztd/2q/1wRH06ng0qraIUWuo5BZwuh5S5lTxX5WaBSovHo1P58+LT/hUKipplDNL2kByy7dsZ6A2hb5YPvHtIh/rUyXJTWh5lnlUTJ2MF7+jzvymRyjL7bEjr0tPNxRyvv7Av5lXlrJ01xEhAYtSjYmrY7t437ySJmRzAkg+Q3cd+vadSvgGT15unPucQcc8nThlp8JqgtIqM47/5Yr7f0dcs+dQ5NOS2pwnn0qOX5YQBuufr+iZSbIStatkfhbQalmGRmYeH2/jjgFvbBxmTsUlYLSL6e/aeGLKngiYw+utSVBhekMBFFU4iSdAPD6Tq62PbWeHy2jvVwl3U2krse8aVyAAd68gQwKs4k="
 
 script:
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
