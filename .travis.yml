@@ -1,21 +1,15 @@
 dist: xenial
-
 language: java
-
 jdk: openjdk11
-
 cache:
   directories:
-  - $HOME/.m2
-  - $HOME/.sonar/cache
-
+  - "$HOME/.m2"
+  - "$HOME/.sonar/cache"
 addons:
   sonarcloud:
-    organization: "facebook-final-project"
-    token: {SONAR_TOKEN}
+    organization: facebook-final-project
+    token:
+      secure: "gjAdzCq/j5cHKD2cqfLeFM1Mkxr0ey6A13IGyVwVoYDuOCLToZb7eu5tOJc3XM+BJAY9zLtKcF0M8oCzFcgU+UyVj9Y4R43bY15pq9YPW/IoKAWp0Hp+1z2N56V3g6PH/CppXbnSeG93oJuNjZJxVkSsrUNDBVd/8MiS4WbNJ7zOclCvmDqOID/ujIIm7QAFwlafK2DBKxcH979cqXFVPy1TxeGI8PUR/BKdzwUe1JHWd/f+U1vElvkb0l2ecOFOoeFroOSrPp5lUlAbHXv8lx35AjcKQUIvq9MLhLQMk3z2Pe32lefNrG261uOQpaTR1lf/cQYliy7GnLX/RTLfG3nAuMM4rh65p5OUqLoJPR93qBnncB1Y1Jw53NNFlCZ/tHoW2q0+NSZHkpjCvuY0rhXQXkIxgcB9EOBoPTtVcSYQ6BNK4VNp/AurR9iOLwDOPeNFKJ3MHxSqrWVkhv7phBpnXdvjMcqvv1As7zRdxDPzDpu3EHSYzId/W3h6ZetJFB16dvcYoK3f9ZOxf9j841R38JUcqwMDMVow0/APERxVnXOwEAa3jh5le5HaMi5oNkuVfe4kRifCHpKJx85m2YzT845AnMu3qu9tue+7u6KrZHtc60a6EwQuLUE3a5nh/heQShuSxR4MfLKVL++uAAO1iOX7/ato/hMSa9JO3BI="
 
 script:
-  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
-
-
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
