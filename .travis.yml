@@ -14,4 +14,4 @@ addons:
       secure: "aAX0u+NGOoDOasiHTazSGwxfssCokGstvh4Ue3cMq63ZxFDVu0LLc+G3PhxW8VR1Hqz/8ZBitStxVkTPUkApgfxZ/kqEe0poi3fqF+rCh+pRAANf2fVxDQiPYw6o2PM/0jEJFUXXZPfUP/uKVXVA4NwybdqFzCbmOend+KczhjqpwT/21ubgwIjiJ6X7eyimpY2JN4pGc++z4+gu5y3GsVAVuKs4Qe/2Ky5QgiD2kPVhDFqYDKRoNY1yrCF2jBXOe8JsVxLUHDJdUDVlUntKr9OpdhZX7khcpaynP19a6RKgYrsfOyxVP5KCUGAxSg+TCYjd2ztd/2q/1wRH06ng0qraIUWuo5BZwuh5S5lTxX5WaBSovHo1P58+LT/hUKipplDNL2kByy7dsZ6A2hb5YPvHtIh/rUyXJTWh5lnlUTJ2MF7+jzvymRyjL7bEjr0tPNxRyvv7Av5lXlrJ01xEhAYtSjYmrY7t437ySJmRzAkg+Q3cd+vadSvgGT15unPucQcc8nThlp8JqgtIqM47/5Yr7f0dcs+dQ5NOS2pwnn0qOX5YQBuufr+iZSbIStatkfhbQalmGRmYeH2/jjgFvbBxmTsUlYLSL6e/aeGLKngiYw+utSVBhekMBFFU4iSdAPD6Tq62PbWeHy2jvVwl3U2krse8aVyAAd68gQwKs4k="
 
 script:
-- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=RostyslavStepanchuk_MiniPlant-telegram-bot
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent coveralls:report install sonar:sonar -Dsonar.projectKey=RostyslavStepanchuk_MiniPlant-telegram-bot
