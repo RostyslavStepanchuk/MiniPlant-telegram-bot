@@ -1,0 +1,9 @@
+bot:
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
+
+spring:
+  h2:
+    console:
+      enabled: true
+
