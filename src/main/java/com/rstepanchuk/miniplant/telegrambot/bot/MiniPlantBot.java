@@ -1,5 +1,11 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,16 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
-
 public class MiniPlantBot extends TelegramLongPollingBot {
 
-  private final BotUserFilter botUserFilter;
+  private final MessageValidator messageValidator;
 
   @Value("${bot.name}")
   private String botUsername;
@@ -25,8 +24,8 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   @Value("${bot.token}")
   private String botToken;
 
-  public MiniPlantBot(BotUserFilter botUserFilter) {
-    this.botUserFilter = botUserFilter;
+  public MiniPlantBot(MessageValidator messageValidator) {
+    this.messageValidator = messageValidator;
   }
 
   public String getBotUsername() {
@@ -39,23 +38,26 @@ public class MiniPlantBot extends TelegramLongPollingBot {
 
   public void onUpdateReceived(Update update) {
     SendMessage message = null;
-    Optional<SendMessage> result = botUserFilter.processUpdate(update);
-    if (result.isPresent()) {
-      message = result.get();
-    };
-    if (message == null && update.hasMessage() && update.getMessage().hasText()) {
-      message = new SendMessage(
-          String.valueOf(update.getMessage().getChatId()),
-          update.getMessage().getText()
-      ); // Create a SendMessage object with mandatory fields
-      message.enableMarkdown(true);
-      message.setReplyMarkup(getSettingsKeyboard());
+    if (update.hasMessage()) {
+      Optional<SendMessage> result = messageValidator.validateMessage(update.getMessage());
+      if (result.isPresent()) {
+        message = result.get();
+      }
+      if (message == null && update.hasMessage() && update.getMessage().hasText()) {
+        message = new SendMessage(
+            String.valueOf(update.getMessage().getChatId()),
+            update.getMessage().getText()
+        ); // Create a SendMessage object with mandatory fields
+        message.enableMarkdown(true);
+        message.setReplyMarkup(getSettingsKeyboard());
+      }
+      try {
+        execute(message); // Call method to send the message
+      } catch (TelegramApiException e) {
+        throw new RuntimeException("Unhandled Telegram exception thrown", e);
+      }
     }
-    try {
-      execute(message); // Call method to send the message
-    } catch (TelegramApiException e) {
-      e.printStackTrace();
-    }
+
   }
 
   private static ReplyKeyboardMarkup getSettingsKeyboard() {
