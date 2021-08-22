@@ -1,5 +1,11 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -7,13 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
 
 public class MiniPlantBot extends TelegramLongPollingBot {
 
@@ -43,7 +42,7 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       Optional<SendMessage> result = messageValidator.validateMessage(update.getMessage());
       if (result.isPresent()) {
         message = result.get();
-      };
+      }
       if (message == null && update.hasMessage() && update.getMessage().hasText()) {
         message = new SendMessage(
             String.valueOf(update.getMessage().getChatId()),
@@ -55,7 +54,7 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       try {
         execute(message); // Call method to send the message
       } catch (TelegramApiException e) {
-        e.printStackTrace();
+        throw new RuntimeException("Unhandled Telegram exception thrown", e);
       }
     }
 

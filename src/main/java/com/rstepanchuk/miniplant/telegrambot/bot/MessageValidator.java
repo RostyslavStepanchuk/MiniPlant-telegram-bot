@@ -1,14 +1,12 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
-import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Optional;
-
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.BOT_IS_ONLY_FOR_SPECIFIC_USERS;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.ONLY_PRIVATE_MESSAGES_ALLOWED;
+
+import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
+import java.util.Optional;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class MessageValidator {
 
@@ -29,7 +27,7 @@ public class MessageValidator {
     }
     // Reject if user is not in the list of allowed
     Long userId = message.getFrom().getId();
-    if (!userRepository.findById(userId).isPresent()) {
+    if (userRepository.findById(userId).isEmpty()) {
       return Optional.of(new SendMessage(
           String.valueOf(message.getChatId()),
           BOT_IS_ONLY_FOR_SPECIFIC_USERS

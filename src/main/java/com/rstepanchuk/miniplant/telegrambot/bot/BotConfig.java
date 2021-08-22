@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Configuration;
 public class BotConfig {
 
   @Bean
-  MiniPlantBot miniPlantBot(MessageValidator messageValidator){
+  MiniPlantBot miniPlantBot(MessageValidator messageValidator) {
     return new MiniPlantBot(messageValidator);
   }
 
   @Bean
-  MessageValidator botUserFilter(UserRepository userRepository){
+  MessageValidator botUserFilter(UserRepository userRepository) {
     return new MessageValidator(userRepository);
   }
 
