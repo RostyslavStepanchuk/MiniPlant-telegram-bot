@@ -1,17 +1,10 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class MiniPlantBot extends TelegramLongPollingBot {
@@ -37,42 +30,42 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   }
 
   public void onUpdateReceived(Update update) {
-    SendMessage message = null;
     if (update.hasMessage()) {
-      Optional<SendMessage> result = messageValidator.validateMessage(update.getMessage());
-      if (result.isPresent()) {
-        message = result.get();
-      }
-      if (message == null && update.hasMessage() && update.getMessage().hasText()) {
-        message = new SendMessage(
-            String.valueOf(update.getMessage().getChatId()),
-            update.getMessage().getText()
-        ); // Create a SendMessage object with mandatory fields
-        message.enableMarkdown(true);
-        message.setReplyMarkup(getSettingsKeyboard());
-      }
+      Optional<String> validationFailedMessage =
+          messageValidator.validateMessage(update.getMessage());
+      SendMessage message = validationFailedMessage.map(s -> new SendMessage(
+          String.valueOf(update.getMessage().getChatId()),
+          s
+      )).orElseGet(() -> new SendMessage(
+          String.valueOf(update.getMessage().getChatId()),
+          update.getMessage().getText()
+      ));
+      // Create a SendMessage object with mandatory fields
+      //        message.enableMarkdown(true);
+      //        message.setReplyMarkup(getSettingsKeyboard());
       try {
         execute(message); // Call method to send the message
       } catch (TelegramApiException e) {
-        throw new RuntimeException("Unhandled Telegram exception thrown", e);
+        throw new IllegalStateException("Exceptions handling for Telegram API not implemented yet",
+            e);
       }
     }
 
   }
 
-  private static ReplyKeyboardMarkup getSettingsKeyboard() {
-    ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-    replyKeyboardMarkup.setSelective(true);
-    replyKeyboardMarkup.setResizeKeyboard(true);
-    replyKeyboardMarkup.setOneTimeKeyboard(true);
-
-    List<KeyboardRow> keyboard = new ArrayList<>();
-    KeyboardRow keyboardFirstRow = new KeyboardRow();
-    keyboardFirstRow.add(INCOME);
-    keyboardFirstRow.add(EXPENSES);
-    keyboard.add(keyboardFirstRow);
-    replyKeyboardMarkup.setKeyboard(keyboard);
-
-    return replyKeyboardMarkup;
-  }
+  //  private static ReplyKeyboardMarkup getSettingsKeyboard() {
+  //    ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+  //    replyKeyboardMarkup.setSelective(true);
+  //    replyKeyboardMarkup.setResizeKeyboard(true);
+  //    replyKeyboardMarkup.setOneTimeKeyboard(true);
+  //
+  //    List<KeyboardRow> keyboard = new ArrayList<>();
+  //    KeyboardRow keyboardFirstRow = new KeyboardRow();
+  //    keyboardFirstRow.add(INCOME);
+  //    keyboardFirstRow.add(EXPENSES);
+  //    keyboard.add(keyboardFirstRow);
+  //    replyKeyboardMarkup.setKeyboard(keyboard);
+  //
+  //    return replyKeyboardMarkup;
+  //  }
 }

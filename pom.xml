@@ -101,6 +101,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/rstepanchuk/miniplant/**/*Config.class</exclude>
+                        <excludes>com/rstepanchuk/miniplant/telegrambot/MiniPlantSpringBootBot.class</excludes>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>

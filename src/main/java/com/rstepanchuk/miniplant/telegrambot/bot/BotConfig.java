@@ -13,7 +13,7 @@ public class BotConfig {
   }
 
   @Bean
-  MessageValidator botUserFilter(UserRepository userRepository) {
+  MessageValidator messageValidator(UserRepository userRepository) {
     return new MessageValidator(userRepository);
   }
 
