@@ -4,8 +4,8 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.BOT_
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.MESSAGE_REQUIRES_TEXT;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.ONLY_PRIVATE_MESSAGES_ALLOWED;
 
-import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
+import java.util.Optional;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class MessageValidator {
