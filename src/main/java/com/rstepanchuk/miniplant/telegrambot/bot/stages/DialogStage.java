@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-public interface DialogStage<M extends BotApiMethod<? extends Serializable>> {
+public interface DialogStage {
 
-  Optional<M> execute(Update update);
+  <M extends BotApiMethod<? extends Serializable>> Optional<M> execute(Update update);
 
   default String getNextStage() {
     return MAIN;

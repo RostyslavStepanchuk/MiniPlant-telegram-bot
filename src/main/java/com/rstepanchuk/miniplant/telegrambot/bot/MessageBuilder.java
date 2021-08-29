@@ -5,8 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class MessageBuilder {
 
-  private Long chatId;
-  private String text;
+  private final Long chatId;
+  private final String text;
 
   public static MessageBuilder message(Update update, String text) {
     return new MessageBuilder(update.getMessage().getChatId(), text);

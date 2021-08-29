@@ -7,7 +7,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-public class DialogStageMain implements DialogStage<SendMessage> {
+public class DialogStageMain implements DialogStage {
 
   @Override
   public Optional<SendMessage> execute(Update update) {

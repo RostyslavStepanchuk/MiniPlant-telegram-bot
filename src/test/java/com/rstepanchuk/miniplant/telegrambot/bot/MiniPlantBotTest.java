@@ -48,8 +48,8 @@ class MiniPlantBotTest {
     Update update = TelegramTestUpdate.getBasicUpdate();
     when(messageValidator.validateMessage(update.getMessage()))
         .thenReturn(Optional.empty());
-    when(dialogStageHandler.handleStage(update))
-        .thenReturn(Optional.of(MessageBuilder.basicMessage(update, testResponse)));
+    SendMessage sendMessage = MessageBuilder.basicMessage(update, testResponse);
+    doReturn(Optional.of(sendMessage)).when(dialogStageHandler).handleStage(update);
     doReturn(new Message()).when(miniPlantBot).execute(any(SendMessage.class));
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 

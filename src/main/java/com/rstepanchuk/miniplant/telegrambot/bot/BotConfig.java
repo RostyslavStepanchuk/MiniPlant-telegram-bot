@@ -13,7 +13,6 @@ import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 
 @Configuration
 public class BotConfig {
@@ -50,7 +49,7 @@ public class BotConfig {
       DialogStageMain dialogStageMain,
       DialogStageUndefined dialogStageUndefined,
       DialogStageIncomeOrExpense dialogStageIncomeOrExpense) {
-    HashMap<String, DialogStage<? extends BotApiMethod>> stages = new HashMap<>();
+    HashMap<String, DialogStage> stages = new HashMap<>();
     stages.put(MAIN, dialogStageMain);
     stages.put(UNDEFINED, dialogStageUndefined);
     stages.put(ACCOUNTING_INC_EXP, dialogStageIncomeOrExpense);
