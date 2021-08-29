@@ -30,12 +30,12 @@ public class DialogStageHandler {
     userRepository.save(user);
   }
 
-  public Optional<? extends BotApiMethod> handleStage(Update update) {
+  public Optional<BotApiMethod> handleStage(Update update) {
     Long userId = update.getMessage().getFrom().getId();
     BotUser user = userRepository.findById(userId)
         .orElseThrow(UserNotAllowedException::new);
     DialogStage currentStage = getStage(user.getStageId());
-    Optional<? extends BotApiMethod> chatOutput = currentStage.execute(update);
+    Optional<BotApiMethod> chatOutput = currentStage.execute(update);
     updateUserStage(user, currentStage.getNextStage());
     return chatOutput;
   }

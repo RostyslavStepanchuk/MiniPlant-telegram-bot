@@ -37,7 +37,7 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       Optional<String> validationFailedMessage =
           messageValidator.validateMessage(update.getMessage());
 
-      Optional<? extends BotApiMethod> output =
+      Optional<BotApiMethod> output =
           validationFailedMessage.isPresent()
           ? validationFailedMessage.map(s ->
           MessageBuilder.basicMessage(update, s))
