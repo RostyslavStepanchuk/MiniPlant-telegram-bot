@@ -13,6 +13,7 @@ import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
@@ -64,7 +65,8 @@ class DialogStageHandlerTest {
     when(userRepository.findById(DEFAULT_USER_ID))
         .thenReturn(Optional.of(user));
 
-    Optional<BotApiMethod> result = dialogStageHandler.handleStage(update);
+    Optional<BotApiMethod<? extends Serializable>> result
+        = dialogStageHandler.handleStage(update);
 
     verify(userRepository,
         description("Request to user repository expected to define current stage id"))

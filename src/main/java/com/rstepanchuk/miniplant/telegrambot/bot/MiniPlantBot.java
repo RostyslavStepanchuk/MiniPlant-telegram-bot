@@ -1,5 +1,6 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
+import java.io.Serializable;
 import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,7 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       Optional<String> validationFailedMessage =
           messageValidator.validateMessage(update.getMessage());
 
-      Optional<BotApiMethod> output = validationFailedMessage.isPresent()
+      Optional<BotApiMethod<? extends Serializable>> output = validationFailedMessage.isPresent()
           ? validationFailedMessage.map(s ->
           MessageBuilder.basicMessage(update, s))
           : dialogStageHandler.handleStage(update);

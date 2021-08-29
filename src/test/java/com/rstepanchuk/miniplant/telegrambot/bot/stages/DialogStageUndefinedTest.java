@@ -19,11 +19,11 @@ class DialogStageUndefinedTest {
     Update update = TelegramTestUpdate.getBasicUpdate();
     Optional<SendMessage> result = dialogStageUndefined.execute(update);
     assertTrue(result.isPresent());
-    assertEquals(result.get().getText(), STAGE_WILL_BE_RESET);
+    assertEquals(STAGE_WILL_BE_RESET, result.get().getText());
   }
 
   @Test
   void getNextStage_shouldPointToMainStage() {
-    assertEquals(dialogStageUndefined.getNextStage(), MAIN);
+    assertEquals(MAIN, dialogStageUndefined.getNextStage());
   }
 }

@@ -19,11 +19,11 @@ class DialogStageMainTest {
     Update update = TelegramTestUpdate.getBasicUpdate();
     Optional<SendMessage> result = dialogStageMain.execute(update);
     assertTrue(result.isPresent());
-    assertEquals(result.get().getText(), "MAIN will be executed");
+    assertEquals("MAIN will be executed", result.get().getText());
   }
 
   @Test
   void getNextStage_shouldPointToAccountingIncomeOrExpense() {
-    assertEquals(dialogStageMain.getNextStage(), ACCOUNTING_INC_EXP);
+    assertEquals(ACCOUNTING_INC_EXP, dialogStageMain.getNextStage());
   }
 }

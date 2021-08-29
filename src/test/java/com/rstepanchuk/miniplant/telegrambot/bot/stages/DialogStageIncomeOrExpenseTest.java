@@ -18,6 +18,6 @@ class DialogStageIncomeOrExpenseTest {
     Update update = TelegramTestUpdate.getBasicUpdate();
     Optional<SendMessage> result = dialogStageIncomeOrExpense.execute(update);
     assertTrue(result.isPresent());
-    assertEquals(result.get().getText(), "Expense choice will be executed");
+    assertEquals("Expense choice will be executed", result.get().getText());
   }
 }
