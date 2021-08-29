@@ -5,13 +5,15 @@ public class Constants {
   private Constants() {
   }
 
-  //  public static class Stages {
-  //
-  //    private Stages() {
-  //    }
-  //
-  //    public static final String MAIN = "MAIN";
-  //  }
+  public static class Stages {
+
+    private Stages() {
+    }
+
+    public static final String MAIN = "MAIN";
+    public static final String UNDEFINED = "UNDEFINED";
+    public static final String ACCOUNTING_INC_EXP = "INCOME_EXPENSE";
+  }
 
   //  public static class Buttons {
   //
@@ -32,5 +34,7 @@ public class Constants {
     public static final String BOT_IS_ONLY_FOR_SPECIFIC_USERS = "Я був створений тільки для"
         + " власниці Mini Plant. На жаль я не зможу тобі допомогти";
     public static final String MESSAGE_REQUIRES_TEXT = "Напиши мені щось, щоб я міг допомогти";
+    public static final String STAGE_WILL_BE_RESET = "Я заплутався, на чому ми зупинились. Давай "
+        + "почнем з самого початку";
   }
 }
