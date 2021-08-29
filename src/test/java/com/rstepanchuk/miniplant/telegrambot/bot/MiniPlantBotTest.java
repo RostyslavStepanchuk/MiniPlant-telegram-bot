@@ -2,14 +2,16 @@ package com.rstepanchuk.miniplant.telegrambot.bot;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.MESSAGE_REQUIRES_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestMessage;
 import java.util.Optional;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
+import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,12 +32,8 @@ class MiniPlantBotTest {
   private MiniPlantBot miniPlantBot;
   @Mock
   private MessageValidator messageValidator;
-
-  private Update getBasicUpdate() {
-    Update update = new Update();
-    update.setMessage(TelegramTestMessage.getBasicMessage());
-    return update;
-  }
+  @Mock
+  private DialogStageHandler dialogStageHandler;
 
   @Test
   void onUpdateReceived_whenUpdateHasNoMessage_shouldNotStartValidation() throws TelegramApiException {
@@ -45,11 +43,13 @@ class MiniPlantBotTest {
   }
 
   @Test
-  void onUpdateReceived_whenMessageIsValid_shouldSendMessageBack() throws TelegramApiException {
-    Update update = new Update();
-    update.setMessage(TelegramTestMessage.getBasicMessage());
+  void onUpdateReceived_whenOutputReturned_shouldExecuteOutput() throws TelegramApiException {
+    final String testResponse = "testResponse";
+    Update update = TelegramTestUpdate.getBasicUpdate();
     when(messageValidator.validateMessage(update.getMessage()))
         .thenReturn(Optional.empty());
+    SendMessage sendMessage = MessageBuilder.basicMessage(update, testResponse);
+    doReturn(Optional.of(sendMessage)).when(dialogStageHandler).handleStage(update);
     doReturn(new Message()).when(miniPlantBot).execute(any(SendMessage.class));
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
@@ -58,14 +58,13 @@ class MiniPlantBotTest {
     String text = sendMessageCaptor.getValue().getText();
     Long chatId = Long.valueOf(sendMessageCaptor.getValue().getChatId());
 
-    assertEquals(update.getMessage().getText(), text);
+    assertEquals(testResponse, text);
     assertEquals(update.getMessage().getChatId(), chatId);
   }
 
   @Test
   void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack() throws TelegramApiException {
-    Update update = new Update();
-    update.setMessage(TelegramTestMessage.getBasicMessage());
+    Update update = TelegramTestUpdate.getBasicUpdate();
     when(messageValidator.validateMessage(update.getMessage()))
         .thenReturn(Optional.of(MESSAGE_REQUIRES_TEXT));
     doReturn(new Message()).when(miniPlantBot).execute(any(SendMessage.class));
@@ -78,5 +77,12 @@ class MiniPlantBotTest {
 
     assertEquals(MESSAGE_REQUIRES_TEXT, text);
     assertEquals(update.getMessage().getChatId(), chatId);
+  }
+
+  @Test
+  void nameAndTokenGetters_shouldBePresent() {
+    // Dummy test to include getters into code test coverage
+    assertNull(miniPlantBot.getBotToken());
+    assertNull(miniPlantBot.getBotUsername());
   }
 }

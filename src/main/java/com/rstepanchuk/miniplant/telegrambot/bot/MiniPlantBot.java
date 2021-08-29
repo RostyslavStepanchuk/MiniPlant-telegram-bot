@@ -1,15 +1,17 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
 import java.util.Optional;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class MiniPlantBot extends TelegramLongPollingBot {
 
   private final MessageValidator messageValidator;
+  private final DialogStageHandler dialogStageHandler;
 
   @Value("${bot.name}")
   private String botUsername;
@@ -17,8 +19,9 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   @Value("${bot.token}")
   private String botToken;
 
-  public MiniPlantBot(MessageValidator messageValidator) {
+  public MiniPlantBot(MessageValidator messageValidator, DialogStageHandler dialogStageHandler) {
     this.messageValidator = messageValidator;
+    this.dialogStageHandler = dialogStageHandler;
   }
 
   public String getBotUsername() {
@@ -33,22 +36,24 @@ public class MiniPlantBot extends TelegramLongPollingBot {
     if (update.hasMessage()) {
       Optional<String> validationFailedMessage =
           messageValidator.validateMessage(update.getMessage());
-      SendMessage message = validationFailedMessage.map(s -> new SendMessage(
-          String.valueOf(update.getMessage().getChatId()),
-          s
-      )).orElseGet(() -> new SendMessage(
-          String.valueOf(update.getMessage().getChatId()),
-          update.getMessage().getText()
-      ));
+
+      Optional<BotApiMethod> output =
+          validationFailedMessage.isPresent()
+          ? validationFailedMessage.map(s ->
+          MessageBuilder.basicMessage(update, s))
+          : dialogStageHandler.handleStage(update);
       // Create a SendMessage object with mandatory fields
       //        message.enableMarkdown(true);
       //        message.setReplyMarkup(getSettingsKeyboard());
-      try {
-        execute(message); // Call method to send the message
-      } catch (TelegramApiException e) {
-        throw new IllegalStateException("Exceptions handling for Telegram API not implemented yet",
-            e);
-      }
+      output.ifPresent(o -> {
+        try {
+          execute(output.get());
+        } catch (TelegramApiException e) {
+          throw new IllegalStateException("Exceptions handling for Telegram API not "
+              + "implemented yet",
+              e);
+        }
+      });
     }
 
   }
