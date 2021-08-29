@@ -6,6 +6,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.MAIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
+import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -78,5 +80,15 @@ class DialogStageHandlerTest {
     BotUser updatedUser = userCaptor.getValue();
     assertEquals(updatedUser.getStageId(), dialogStageMain.getNextStage());
     assertThat(result, instanceOf(Optional.class));
+  }
+
+  @Test
+  void handleStage_whenUserIdIsNotFound_shouldThrowUserNotAllowedException() {
+    Update update = TelegramTestUpdate.getBasicUpdate();
+
+    when(userRepository.findById(DEFAULT_USER_ID))
+        .thenReturn(Optional.empty());
+
+    assertThrows(UserNotAllowedException.class, ()->dialogStageHandler.handleStage(update));
   }
 }

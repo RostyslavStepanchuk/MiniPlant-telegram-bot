@@ -4,6 +4,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.UNDEFI
 
 import java.util.Map;
 import java.util.Optional;
+import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -31,7 +32,8 @@ public class DialogStageHandler {
 
   public Optional<BotApiMethod> handleStage(Update update) {
     Long userId = update.getMessage().getFrom().getId();
-    BotUser user = userRepository.findById(userId).get();
+    BotUser user = userRepository.findById(userId)
+        .orElseThrow(UserNotAllowedException::new);
     DialogStage currentStage = getStage(user.getStageId());
     Optional<BotApiMethod> chatOutput = currentStage.execute(update);
     updateUserStage(user, currentStage.getNextStage());
