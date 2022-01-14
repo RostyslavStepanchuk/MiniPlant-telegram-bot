@@ -13,6 +13,6 @@ public class DialogStageUndefined implements DialogStage {
   public void execute(Update update, TelegramLongPollingBot bot) throws TelegramApiException {
     bot.execute(
         MessageBuilder.basicMessage(update, STAGE_UNKNOWN)
-        );
+    );
   }
 }

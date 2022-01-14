@@ -26,7 +26,7 @@ public class MessageValidator {
    * @return user response about validation been failed or empty optional if message is valid
    */
   public BotUser validateMessage(Message message) {
-    
+
     // Reject if it's not a user message
     if (!message.isUserMessage()) {
       throw new MessageValidationException(ONLY_PRIVATE_MESSAGES_ALLOWED);
@@ -42,5 +42,5 @@ public class MessageValidator {
 
     return userRepository.findById(userId)
         .orElseThrow(() -> new UserNotAllowedException(BOT_IS_ONLY_FOR_SPECIFIC_USERS));
-    }
+  }
 }
