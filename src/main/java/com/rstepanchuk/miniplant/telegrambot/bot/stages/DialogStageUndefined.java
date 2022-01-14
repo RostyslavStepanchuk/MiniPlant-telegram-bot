@@ -1,18 +1,18 @@
 package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_WILL_BE_RESET;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_UNKNOWN;
 
-import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class DialogStageUndefined implements DialogStage {
 
   @Override
-  public Optional<SendMessage> execute(Update update) {
-    return Optional.of(
-        MessageBuilder.basicMessage(update, STAGE_WILL_BE_RESET)
-        );
+  public void execute(Update update, TelegramLongPollingBot bot) throws TelegramApiException {
+    bot.execute(
+        MessageBuilder.basicMessage(update, STAGE_UNKNOWN)
+    );
   }
 }
