@@ -1,13 +1,9 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
-
-import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageDummy;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageIncomeOrExpense;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageMain;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
-import com.rstepanchuk.miniplant.telegrambot.google.sheets.GoogleSheetsService;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
