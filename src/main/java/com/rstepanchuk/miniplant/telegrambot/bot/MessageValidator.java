@@ -4,8 +4,10 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.BOT_
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.MESSAGE_REQUIRES_TEXT;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.ONLY_PRIVATE_MESSAGES_ALLOWED;
 
+import com.rstepanchuk.miniplant.telegrambot.exception.MessageValidationException;
+import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
-import java.util.Optional;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class MessageValidator {
@@ -23,24 +25,22 @@ public class MessageValidator {
    * @param message telegram message
    * @return user response about validation been failed or empty optional if message is valid
    */
-  public Optional<String> validateMessage(Message message) {
-
-    // Reject if there is no message
+  public BotUser validateMessage(Message message) {
+    
+    // Reject if it's not a user message
     if (!message.isUserMessage()) {
-      return Optional.of(ONLY_PRIVATE_MESSAGES_ALLOWED);
+      throw new MessageValidationException(ONLY_PRIVATE_MESSAGES_ALLOWED);
     }
 
     // Reject if there is no text in message
     if (!message.hasText()) {
-      return Optional.of(MESSAGE_REQUIRES_TEXT);
+      throw new MessageValidationException(MESSAGE_REQUIRES_TEXT);
     }
 
     // Reject if user is not in the list of allowed
     Long userId = message.getFrom().getId();
-    if (userRepository.findById(userId).isEmpty()) {
-      return Optional.of(BOT_IS_ONLY_FOR_SPECIFIC_USERS);
-    }
 
-    return Optional.empty();
-  }
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new UserNotAllowedException(BOT_IS_ONLY_FOR_SPECIFIC_USERS));
+    }
 }

@@ -1,28 +1,36 @@
 package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.UNDEFINED;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_WILL_BE_RESET;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
 
-import java.util.Map;
-import java.util.Optional;
-import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
+import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@RequiredArgsConstructor
+@Slf4j
 public class DialogStageHandler {
 
-  private final Map<String, DialogStage> stagesContainer;
   private final UserRepository userRepository;
-
-  public DialogStageHandler(Map<String, DialogStage> stagesContainer,
-                            UserRepository userRepository) {
-    this.stagesContainer = stagesContainer;
-    this.userRepository = userRepository;
-  }
+  private final ApplicationContext context;
+  private final DialogStage defaultStage;
 
   private DialogStage getStage(String stageName) {
-    return stagesContainer.getOrDefault(stageName, stagesContainer.get(UNDEFINED));
+    try {
+      return context.getBean(stageName, DialogStage.class);
+    } catch (BeansException e) {
+      log.error("Unable to find stage {}", stageName, e);
+      return defaultStage;
+    }
   }
 
   private void updateUserStage(BotUser user, String nextStage) {
@@ -30,14 +38,20 @@ public class DialogStageHandler {
     userRepository.save(user);
   }
 
-  public Optional<BotApiMethod> handleStage(Update update) {
-    Long userId = update.getMessage().getFrom().getId();
-    BotUser user = userRepository.findById(userId)
-        .orElseThrow(UserNotAllowedException::new);
-    DialogStage currentStage = getStage(user.getStageId());
-    Optional<BotApiMethod> chatOutput = currentStage.execute(update);
-    updateUserStage(user, currentStage.getNextStage());
-    return chatOutput;
+
+  public void handleStage(Update update, BotUser user, TelegramLongPollingBot bot) throws TelegramApiException {
+    try {
+      DialogStage currentStage = getStage(user.getStageId());
+      currentStage.execute(update, bot);
+      updateUserStage(user, currentStage.getNextStage());
+    } catch (ApplicationException e) {
+      bot.execute(MessageBuilder.basicMessage(update, e.getMessage()));
+      bot.execute(MessageBuilder.basicMessage(update, STAGE_WILL_BE_RESET));
+      updateUserStage(user, Stages.MAIN);
+    } catch (Exception e) {
+      bot.execute(MessageBuilder.basicMessage(update, UNEXPECTED_ERROR));
+    }
+
   }
 
 }

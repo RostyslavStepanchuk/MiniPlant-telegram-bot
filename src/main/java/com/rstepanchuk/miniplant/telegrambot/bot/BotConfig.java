@@ -1,16 +1,15 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.ACCOUNTING_INC_EXP;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.MAIN;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.UNDEFINED;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
 
-import java.util.HashMap;
-import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStage;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageDummy;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageIncomeOrExpense;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageMain;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
+import com.rstepanchuk.miniplant.telegrambot.google.sheets.GoogleSheetsService;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,14 +45,9 @@ public class BotConfig {
   @Bean
   DialogStageHandler dialogStageHandler(
       UserRepository userRepository,
-      DialogStageMain dialogStageMain,
-      DialogStageUndefined dialogStageUndefined,
-      DialogStageIncomeOrExpense dialogStageIncomeOrExpense) {
-    HashMap<String, DialogStage> stages = new HashMap<>();
-    stages.put(MAIN, dialogStageMain);
-    stages.put(UNDEFINED, dialogStageUndefined);
-    stages.put(ACCOUNTING_INC_EXP, dialogStageIncomeOrExpense);
-    return new DialogStageHandler(stages, userRepository);
+      ApplicationContext context,
+      DialogStageUndefined undefinedStage) {
+    return new DialogStageHandler(userRepository, context, undefinedStage);
   }
 
 

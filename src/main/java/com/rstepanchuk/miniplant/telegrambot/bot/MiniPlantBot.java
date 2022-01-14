@@ -1,13 +1,22 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
-import java.util.Optional;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.TELEGRAM_EXCEPTION;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
+
+import java.io.Serializable;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
+import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@RequiredArgsConstructor
+@Slf4j
 public class MiniPlantBot extends TelegramLongPollingBot {
 
   private final MessageValidator messageValidator;
@@ -19,10 +28,6 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   @Value("${bot.token}")
   private String botToken;
 
-  public MiniPlantBot(MessageValidator messageValidator, DialogStageHandler dialogStageHandler) {
-    this.messageValidator = messageValidator;
-    this.dialogStageHandler = dialogStageHandler;
-  }
 
   public String getBotUsername() {
     return botUsername;
@@ -33,29 +38,27 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   }
 
   public void onUpdateReceived(Update update) {
-    if (update.hasMessage()) {
-      Optional<String> validationFailedMessage =
-          messageValidator.validateMessage(update.getMessage());
-
-      Optional<BotApiMethod> output =
-          validationFailedMessage.isPresent()
-          ? validationFailedMessage.map(s ->
-          MessageBuilder.basicMessage(update, s))
-          : dialogStageHandler.handleStage(update);
-      // Create a SendMessage object with mandatory fields
-      //        message.enableMarkdown(true);
-      //        message.setReplyMarkup(getSettingsKeyboard());
-      output.ifPresent(o -> {
-        try {
-          execute(output.get());
-        } catch (TelegramApiException e) {
-          throw new IllegalStateException("Exceptions handling for Telegram API not "
-              + "implemented yet",
-              e);
-        }
-      });
+    try {
+      if (update.hasMessage()) {
+        BotUser user = messageValidator.validateMessage(update.getMessage());
+        dialogStageHandler.handleStage(update, user, this);
+      }
+    } catch (ApplicationException e) {
+      exec(MessageBuilder.basicMessage(update, e.getMessage()));
+    } catch (TelegramApiException ex) {
+      log.error("Unexpected Telegram exception", ex);
+      exec(MessageBuilder.basicMessage(update, TELEGRAM_EXCEPTION));
+    } catch (Exception e) {
+      exec(MessageBuilder.basicMessage(update, UNEXPECTED_ERROR));
     }
+  }
 
+  private <T extends Serializable, M extends BotApiMethod<T>> void exec(M method) {
+    try {
+      execute(method);
+    } catch (TelegramApiException e) {
+      log.error("Unexpected Telegram exception", e);
+    }
   }
 
   //  private static ReplyKeyboardMarkup getSettingsKeyboard() {
