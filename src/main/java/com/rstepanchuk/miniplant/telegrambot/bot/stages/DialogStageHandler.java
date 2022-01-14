@@ -39,11 +39,7 @@ public class DialogStageHandler {
   }
 
 
-  public void handleStage(
-      Update update,
-      BotUser user,
-      TelegramLongPollingBot bot
-  ) throws TelegramApiException {
+  public void handleStage(Update update, BotUser user, TelegramLongPollingBot bot) throws TelegramApiException {
     try {
       DialogStage currentStage = getStage(user.getStageId());
       currentStage.execute(update, bot);
