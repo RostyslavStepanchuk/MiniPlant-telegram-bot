@@ -4,9 +4,11 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.GOOG
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleServiceFactory;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleAuthorizationUtils;
@@ -23,31 +25,37 @@ public class GoogleConfig {
 
   @Bean
   GoogleCredentialsManager googleAuthorizationUtil(GoogleAuthorizationCodeFlow codeFlow,
-                                                   TelegramLongPollingBot bot) {
-    return new GoogleCredentialsManager(codeFlow, bot);
+                                                   TelegramLongPollingBot bot,
+                                                   VerificationCodeReceiver receiver) {
+    return new GoogleCredentialsManager(codeFlow, bot, receiver);
   }
 
   @Bean
-  GoogleServiceFactory googleServiceFactory (
+  GoogleServiceFactory googleServiceFactory(
       GoogleCredentialsManager googleCredentialsManager,
-      NetHttpTransport httpTransport) {
+      HttpTransport httpTransport) {
     return new GoogleServiceFactory(googleCredentialsManager, httpTransport);
   }
 
   @Bean
   GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow(Environment env,
-                                                          NetHttpTransport transport) {
+                                                          HttpTransport transport) {
     return GoogleAuthorizationUtils.createCodeFlow(env, transport);
   }
 
   @Bean
-  NetHttpTransport googleNetHttpTransport() {
+  HttpTransport googleNetHttpTransport() {
     try {
       return GoogleNetHttpTransport.newTrustedTransport();
     } catch (IOException | GeneralSecurityException e) {
       log.error("Error while creating Google http transport", e);
       throw new GoogleApiException(GOOGLE_AUTH_EXCEPTION);
     }
+  }
+
+  @Bean
+  VerificationCodeReceiver localServerReceiver() {
+    return new LocalServerReceiver();
   }
 
 }

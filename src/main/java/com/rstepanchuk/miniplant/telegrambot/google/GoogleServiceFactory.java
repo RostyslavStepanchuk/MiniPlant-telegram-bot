@@ -1,6 +1,6 @@
 package com.rstepanchuk.miniplant.telegrambot.google;
 
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
@@ -15,7 +15,7 @@ public class GoogleServiceFactory {
   private String applicationName;
 
   private final GoogleCredentialsManager googleCredentialsManager;
-  private final NetHttpTransport httpTransport;
+  private final HttpTransport httpTransport;
 
   public Sheets getSheetsService(Update update) {
     return new Sheets.Builder(

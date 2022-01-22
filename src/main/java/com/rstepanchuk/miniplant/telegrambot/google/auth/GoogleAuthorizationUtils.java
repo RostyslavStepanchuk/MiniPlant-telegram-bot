@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.SheetsScopes;
@@ -36,10 +36,13 @@ public class GoogleAuthorizationUtils {
     return clientSecrets;
   }
 
-  public static GoogleAuthorizationCodeFlow createCodeFlow(Environment env, NetHttpTransport httpTransport) {
+  public static GoogleAuthorizationCodeFlow createCodeFlow(
+      Environment env,
+      HttpTransport httpTransport) {
     try {
       String tokensPath =
-          GoogleAuthorizationUtils.class.getResource("/") + env.getProperty("sheets.tokens_path");
+          GoogleAuthorizationUtils.class.getResource("/").getPath()
+              + env.getProperty("sheets.tokens_path");
       List<String> scopes = Collections.singletonList(SheetsScopes.SPREADSHEETS);
       return new GoogleAuthorizationCodeFlow.Builder(
           httpTransport,

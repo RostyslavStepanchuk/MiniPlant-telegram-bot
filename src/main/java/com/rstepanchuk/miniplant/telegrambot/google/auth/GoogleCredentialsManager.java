@@ -8,7 +8,7 @@ import java.util.Optional;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
@@ -23,12 +23,14 @@ public class GoogleCredentialsManager {
 
   private final GoogleAuthorizationCodeFlow authCodeFlow;
   private final TelegramLongPollingBot bot;
+  private final VerificationCodeReceiver receiver;
+
 
   public Credential getCredentials(Update update) {
     Long userId = update.getMessage().getFrom().getId();
 
     return Optional.ofNullable(getExistingCredentials(authCodeFlow, userId))
-    .orElseGet(()-> authorize(authCodeFlow, update));
+        .orElseGet(() -> authorize(authCodeFlow, update));
   }
 
   private Credential getExistingCredentials(GoogleAuthorizationCodeFlow authCodeFlow,
@@ -39,22 +41,23 @@ public class GoogleCredentialsManager {
         return null;
       }
 
-      if (credential.getExpirationTimeMilliseconds() == null
-          && credential.getRefreshToken() != null) {
-
-        boolean b = credential.refreshToken();
-        return b ? credential : null;
+      if (credential.getExpirationTimeMilliseconds() != null) {
+        return credential;
       }
 
-      return credential;
+      if (credential.getRefreshToken() != null) {
+        return credential.refreshToken() ? credential : null;
+      }
+
+      return null;
     } catch (Exception e) {
+      log.error("Error while getting or refreshing stored credentials", e);
       return null;
     }
   }
 
   private Credential authorize(GoogleAuthorizationCodeFlow authCodeFlow,
                                Update update) {
-    LocalServerReceiver receiver = new LocalServerReceiver();
     try {
       String redirectUri = receiver.getRedirectUri();
       AuthorizationCodeRequestUrl authorizationUrl =
