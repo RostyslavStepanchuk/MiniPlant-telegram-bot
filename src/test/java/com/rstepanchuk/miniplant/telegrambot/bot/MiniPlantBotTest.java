@@ -110,7 +110,7 @@ class MiniPlantBotTest {
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
     doThrow(new TelegramApiException(EXCEPTION_TEST_MSG))
         .when(dialogStageHandler).handleStage(any(), any(), any());
-    
+
     miniPlantBot.onUpdateReceived(update);
 
     verify(miniPlantBot).execute(sendMessageCaptor.capture());

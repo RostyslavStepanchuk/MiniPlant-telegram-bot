@@ -7,3 +7,10 @@ spring:
     console:
       enabled: true
 
+sheets:
+  app_name: Mini-plant-telegram-bot
+  sheet_id: SHEET_ID_TEMPORARY
+  client_id: ${SHEETS_API_CLIENT_ID}
+  client_secret: ${SHEETS_API_CLIENT_SECRET}
+  tokens_path: classpath:/tokens
+  secrets_path: /google_api.json

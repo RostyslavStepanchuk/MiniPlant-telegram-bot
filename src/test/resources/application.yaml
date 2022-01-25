@@ -1,0 +1,11 @@
+bot:
+  name: TEST_BOT_NAME
+  token: TEST_BOT_TOKEN
+
+sheets:
+  app_name: TEST_APP_NAME
+  sheet_id: TEST_SHEET_ID
+  client_id: TEST_SHEETS_API_CLIENT_ID
+  client_secret: TEST_SHEETS_API_CLIENT_SECRET
+  tokens_path: classpath:/tokens
+  secrets_path: /google_api.json

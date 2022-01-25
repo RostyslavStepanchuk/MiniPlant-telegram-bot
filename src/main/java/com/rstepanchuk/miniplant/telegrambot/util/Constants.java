@@ -41,5 +41,10 @@ public class Constants {
         + "горе-програмісту чоловіку, що мені погано";
     public static final String TELEGRAM_EXCEPTION = "Схоже, щось зламалось в Телеграмі. Розкажи "
         + "Ростику, йому буде цікаво";
+    public static final String GOOGLE_AUTH_EXCEPTION = "Мені не вдається зайти до твого акаунту "
+        + "в Google, і я не можу з цим нічого зробити :(";
+    public static final String FOLLOW_AUTH_URL = "Я не можу зайти в твій акаунт Google. Будь "
+        + "ласка, пройди за "
+        + "посиланням і передай, що я від тебе";
   }
 }
