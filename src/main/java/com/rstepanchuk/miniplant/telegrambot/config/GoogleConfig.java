@@ -1,6 +1,6 @@
 package com.rstepanchuk.miniplant.telegrambot.config;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.GOOGLE_AUTH_EXCEPTION;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.GOOGLE_API_EXCEPTION;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 @Configuration
 @Slf4j
@@ -25,9 +24,8 @@ public class GoogleConfig {
 
   @Bean
   GoogleCredentialsManager googleAuthorizationUtil(GoogleAuthorizationCodeFlow codeFlow,
-                                                   TelegramLongPollingBot bot,
                                                    VerificationCodeReceiver receiver) {
-    return new GoogleCredentialsManager(codeFlow, bot, receiver);
+    return new GoogleCredentialsManager(codeFlow, receiver);
   }
 
   @Bean
@@ -49,7 +47,7 @@ public class GoogleConfig {
       return GoogleNetHttpTransport.newTrustedTransport();
     } catch (IOException | GeneralSecurityException e) {
       log.error("Error while creating Google http transport", e);
-      throw new GoogleApiException(GOOGLE_AUTH_EXCEPTION);
+      throw new GoogleApiException(GOOGLE_API_EXCEPTION);
     }
   }
 

@@ -14,7 +14,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
+import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -58,7 +58,7 @@ public class GoogleAuthorizationUtils {
           .build();
     } catch (IOException e) {
       log.error("Unable to create code flow", e);
-      throw new GoogleApiException(GOOGLE_AUTH_EXCEPTION);
+      throw new GoogleAuthenticationException(GOOGLE_AUTH_EXCEPTION);
     }
   }
 }

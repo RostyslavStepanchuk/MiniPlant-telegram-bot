@@ -1,10 +1,11 @@
 package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.ACCOUNTING_INC_EXP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
+import com.rstepanchuk.miniplant.telegrambot.util.Constants;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,7 +19,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @ExtendWith(MockitoExtension.class)
 class DialogStageMainTest {
 
-  private final DialogStageMain dialogStageMain = new DialogStageMain();
+  private final DialogStageMain subject = new DialogStageMain();
 
   @Mock
   private TelegramLongPollingBot bot;
@@ -28,7 +29,7 @@ class DialogStageMainTest {
     Update update = TelegramTestUpdate.getBasicUpdate();
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
-    dialogStageMain.execute(update, bot);
+    subject.execute(update, bot);
 
     verify(bot).execute(messageCaptor.capture());
     SendMessage capturedMessage = messageCaptor.getValue();
@@ -36,7 +37,11 @@ class DialogStageMainTest {
   }
 
   @Test
-  void getNextStage_shouldPointToAccountingIncomeOrExpense() {
-    assertEquals(ACCOUNTING_INC_EXP, dialogStageMain.getNextStage());
+  @DisplayName("execute - returns MAIN stage")
+  void execute_returnsMainStage() throws TelegramApiException {
+    Update update = TelegramTestUpdate.getBasicUpdate();
+    String actual = subject.execute(update, bot);
+    assertEquals(Constants.Stages.ACCOUNTING_INC_EXP, actual);
   }
+
 }

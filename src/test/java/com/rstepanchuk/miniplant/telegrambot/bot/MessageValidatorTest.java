@@ -14,7 +14,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestMess
 import com.rstepanchuk.miniplant.telegrambot.exception.MessageValidationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
-import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
+import com.rstepanchuk.miniplant.telegrambot.repository.implementation.UserRepositoryImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class MessageValidatorTest {
   @InjectMocks
   private MessageValidator messageValidator;
   @Mock
-  private UserRepository userRepository;
+  private UserRepositoryImpl userRepository;
 
 
   @Test

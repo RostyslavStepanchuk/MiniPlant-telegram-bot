@@ -3,7 +3,6 @@ package com.rstepanchuk.miniplant.telegrambot.google;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.api.client.http.HttpTransport;
-import com.google.api.services.sheets.v4.Sheets;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
 import org.junit.jupiter.api.DisplayName;
@@ -27,11 +26,12 @@ class GoogleServiceFactoryTest {
   private HttpTransport httpTransport;
 
   @Test
-  @DisplayName("Returns Sheets service")
+  @DisplayName("Returns Sheets client")
   void getSheetsService() {
     Update basicUpdate = TelegramTestUpdate.getBasicUpdate();
-    Sheets sheetsService = subject.getSheetsService(basicUpdate);
+    GoogleSheetsClient sheetsService =
+        subject.getSheetsService(basicUpdate.getMessage().getFrom().getId());
 
-    assertEquals(Sheets.class, sheetsService.getClass());
+    assertEquals(GoogleSheetsClient.class, sheetsService.getClass());
   }
 }
