@@ -24,7 +24,7 @@
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern" value="module\-info\.java$"/>
         <property name="fileNamePattern"
-                  value=".*[\\/]target[\\/].*$"/>
+                  value=".*[\\/]target[\\/]**[\\/].*$"/>
     </module>
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
