@@ -6,11 +6,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public interface DialogStage {
   /**
+   * Method that encapsulates whole user dialog stage logic and returns name of the next stage.
    *
    * @param update telegram update object
    * @param bot telegram bot
    * @return next Stage name
-   * @throws TelegramApiException
+   * @throws TelegramApiException exception thrown by Telegram library
    */
   String execute(Update update, TelegramLongPollingBot bot) throws TelegramApiException;
 

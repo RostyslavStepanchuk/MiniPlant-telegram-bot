@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @RequiredArgsConstructor
-public class DialogStageGoogleAuth implements DialogStage{
+public class DialogStageGoogleAuth implements DialogStage {
 
   private final GoogleCredentialsManager credentialsManager;
 

@@ -18,16 +18,16 @@ public class GoogleSheetsClient {
 
   private final Sheets sheets;
 
-//  public ValueRange getColumns(String rangeStart, String rangeEnd) throws IOException {
-//    return buildGetRequest(rangeStart, rangeEnd)
-//        .setMajorDimension("COLUMNS")
-//        .execute();
-//  }
-//
-//  public ValueRange getRows(String rangeStart, String rangeEnd) throws IOException {
-//    return buildGetRequest(rangeStart, rangeEnd)
-//        .execute();
-//  }
+  //  public ValueRange getColumns(String rangeStart, String rangeEnd) throws IOException {
+  //    return buildGetRequest(rangeStart, rangeEnd)
+  //        .setMajorDimension("COLUMNS")
+  //        .execute();
+  //  }
+  //
+  //  public ValueRange getRows(String rangeStart, String rangeEnd) throws IOException {
+  //    return buildGetRequest(rangeStart, rangeEnd)
+  //        .execute();
+  //  }
 
   public AppendValuesResponse appendRow(SheetPageEntity credentials,
                                         String range, List<Object> values) {
@@ -45,12 +45,12 @@ public class GoogleSheetsClient {
     }
   }
 
-//  private Sheets.Spreadsheets.Values.Get buildGetRequest(
-//      String rangeStart,
-//      String rangeEnd) throws IOException {
-//    return sheets.spreadsheets()
-//        .values()
-//        .get(sheetId, "SPREADSHEET" + "!" + rangeStart + ":" + rangeEnd);
-//  }
+  //  private Sheets.Spreadsheets.Values.Get buildGetRequest(
+  //      String rangeStart,
+  //      String rangeEnd) throws IOException {
+  //    return sheets.spreadsheets()
+  //        .values()
+  //        .get(sheetId, "SPREADSHEET" + "!" + rangeStart + ":" + rangeEnd);
+  //  }
 
 }
