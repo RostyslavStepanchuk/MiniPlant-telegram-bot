@@ -11,7 +11,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 
 @SpringBootTest(
-webEnvironment = SpringBootTest.WebEnvironment.NONE)
+    webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @EnableAutoConfiguration(exclude = TelegramBotStarterConfiguration.class)
 class MiniPlantSpringBootBotTest {
 
@@ -20,7 +20,7 @@ class MiniPlantSpringBootBotTest {
 
   @Test
   @DisplayName("Beans are loaded")
-  void contextLoads(){
+  void contextLoads() {
     assertNotNull(miniPlantBot);
   }
 

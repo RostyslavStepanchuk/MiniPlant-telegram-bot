@@ -156,7 +156,8 @@ class GoogleCredentialsManagerTest {
 
   @Test
   @DisplayName("getCredentials - throws auth exception when token refresh throws Exception")
-  void getCredentials_throwsGoogleAuthenticationExceptionIfTokenRefreshThrowsException() throws IOException {
+  void getCredentials_throwsGoogleAuthenticationExceptionIfTokenRefreshThrowsException()
+      throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     GoogleCredentialStub invalidCredential = GoogleCredentialStub.createInstance();

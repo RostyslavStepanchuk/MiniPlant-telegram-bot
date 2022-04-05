@@ -70,7 +70,8 @@ class MiniPlantBotTest {
 
   @Test
   @DisplayName("Should notify user if application exception")
-  void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack() throws TelegramApiException {
+  void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack()
+      throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
 
     doThrow(new MessageValidationException(EXCEPTION_TEST_MSG))

@@ -42,7 +42,8 @@ class GoogleAuthorizationUtilsTest {
     when(env.getProperty("sheets.secrets_path")).thenReturn(SECRETS_PATH);
     when(env.getProperty("sheets.tokens_path")).thenReturn(TOKENS_PATH);
 
-    GoogleAuthorizationCodeFlow codeFlow = GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
+    GoogleAuthorizationCodeFlow codeFlow =
+        GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
 
     verify(env).getProperty("sheets.client_id");
     verify(env).getProperty("sheets.client_secret");
@@ -62,7 +63,8 @@ class GoogleAuthorizationUtilsTest {
     List<String> expectedScopes =
         Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
-    GoogleAuthorizationCodeFlow codeFlow = GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
+    GoogleAuthorizationCodeFlow codeFlow =
+        GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
 
     assertIterableEquals(expectedScopes, codeFlow.getScopes());
   }
@@ -75,8 +77,8 @@ class GoogleAuthorizationUtilsTest {
     when(env.getProperty("sheets.secrets_path")).thenReturn(SECRETS_PATH_INVALID);
     when(env.getProperty("sheets.tokens_path")).thenReturn(TOKENS_PATH);
 
-    assertThrows(GoogleAuthenticationException.class, ()-> GoogleAuthorizationUtils.createCodeFlow(env,
-        httpTransport));
+    assertThrows(GoogleAuthenticationException.class,
+        () -> GoogleAuthorizationUtils.createCodeFlow(env, httpTransport));
   }
 
 }

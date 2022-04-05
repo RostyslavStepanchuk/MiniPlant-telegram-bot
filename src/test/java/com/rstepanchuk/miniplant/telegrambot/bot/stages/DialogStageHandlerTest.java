@@ -162,13 +162,15 @@ class DialogStageHandlerTest {
 
   @Test
   @DisplayName("handleStage - sends message about authentication issue if any")
-  void handleStage_whenGoogleAuthenticationException_shouldSendMessage() throws TelegramApiException {
+  void handleStage_whenGoogleAuthenticationException_shouldSendMessage()
+      throws TelegramApiException {
     // given
     String exceptionMessage = "testMessage";
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     BotUser givenUser = getTestBotUser();
 
-    GoogleAuthenticationException authException = new GoogleAuthenticationException(exceptionMessage);
+    GoogleAuthenticationException authException =
+        new GoogleAuthenticationException(exceptionMessage);
     when(dialogStage.execute(givenUpdate, bot))
         .thenThrow(authException)
         .thenReturn(null);
@@ -186,7 +188,8 @@ class DialogStageHandlerTest {
 
   @Test
   @DisplayName("handleStage - executes Google Auth stage if authentication exception")
-  void handleStage_whenGoogleAuthenticationException_shouldExecuteGoogleAuthStage() throws TelegramApiException {
+  void handleStage_whenGoogleAuthenticationException_shouldExecuteGoogleAuthStage()
+      throws TelegramApiException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     BotUser givenUser = getTestBotUser();
@@ -209,7 +212,8 @@ class DialogStageHandlerTest {
 
   @Test
   @DisplayName("handleStage - handles current stage again")
-  void handleStage_whenGoogleAuthenticationException_shouldRepeatCurrentStage() throws TelegramApiException {
+  void handleStage_whenGoogleAuthenticationException_shouldRepeatCurrentStage()
+      throws TelegramApiException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     BotUser givenUser = getTestBotUser();

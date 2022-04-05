@@ -55,9 +55,9 @@ class MessageValidatorTest {
   @Test
   void validateMessage_whenUserIsNotFromAllowedList_shouldReturnInvalidInputMessage() {
     Message message = TelegramTestMessage.getBasicMessage();
-    Long NOT_ALLOWED_USER_ID = 2L;
-    message.getFrom().setId(NOT_ALLOWED_USER_ID);
-    when(userRepository.findById(NOT_ALLOWED_USER_ID)).thenReturn(Optional.empty());
+    Long notAllowedUserId = 2L;
+    message.getFrom().setId(notAllowedUserId);
+    when(userRepository.findById(notAllowedUserId)).thenReturn(Optional.empty());
 
     UserNotAllowedException expectedException = assertThrows(UserNotAllowedException.class,
         () -> messageValidator.validateMessage(message));
@@ -67,12 +67,12 @@ class MessageValidatorTest {
   @Test
   void validateMessage_whenUserIsFromAllowedList_shouldReturnValidUser() {
     Message message = TelegramTestMessage.getBasicMessage();
-    BotUser VALID_BOT_USER = new BotUser();
+    BotUser validBotUser = new BotUser();
     when(userRepository.findById(DEFAULT_USER_ID))
-        .thenReturn(Optional.of(VALID_BOT_USER));
+        .thenReturn(Optional.of(validBotUser));
 
     BotUser actualUser = messageValidator.validateMessage(message);
-    assertEquals(VALID_BOT_USER, actualUser);
+    assertEquals(validBotUser, actualUser);
   }
 
 }

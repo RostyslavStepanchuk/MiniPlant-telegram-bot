@@ -79,21 +79,21 @@ class GoogleSheetsClientTest {
   }
 
 
-    @Test
+  @Test
   @DisplayName("appendRow - appends sheetsId from credentials")
   void appendRow_shouldAppendSheetIdFromCredentials() throws IOException {
-      // given
-      SheetPageEntity credentials = new SheetPageEntity();
-      credentials.setSheetId(SHEET_ID);
-      ArrayList<Object> givenValues = new ArrayList<>();
+    // given
+    SheetPageEntity credentials = new SheetPageEntity();
+    credentials.setSheetId(SHEET_ID);
+    ArrayList<Object> givenValues = new ArrayList<>();
 
-      mockSpreadsheetsChain();
+    mockSpreadsheetsChain();
 
-      // when
-      subject.appendRow(credentials, RANGE, givenValues);
+    // when
+    subject.appendRow(credentials, RANGE, givenValues);
 
-      // then
-      verify(values).append(eq(SHEET_ID), any(), any());
+    // then
+    verify(values).append(eq(SHEET_ID), any(), any());
   }
 
   @Test
