@@ -17,8 +17,8 @@ class UserMapperTest {
   UserMapper subject = Mappers.getMapper(UserMapper.class);
 
   @Test
-  @DisplayName("toBotUserEntity - copies all properties")
-  void toBotUserEntity_copiesAllProperties() {
+  @DisplayName("toBotUser - copies all properties")
+  void toBotUser_copiesAllProperties() {
     // given
     BotUserEntity given = new BotUserEntity();
     given.setId(ID);
@@ -31,8 +31,14 @@ class UserMapperTest {
   }
 
   @Test
-  @DisplayName("toBotUser - copies all properties")
-  void toBotUser_copiesAllProperties() {
+  @DisplayName("toBotUserEntity - accepts null")
+  void toBotUser_acceptsNull() {
+    assertNull(subject.toBotUser(null));
+  }
+
+  @Test
+  @DisplayName("toBotUserEntity - copies all properties")
+  void toBotUserEntity_copiesAllProperties() {
     // given
     BotUser given = new BotUser();
     given.setId(ID);
@@ -43,4 +49,11 @@ class UserMapperTest {
     assertEquals(ID, actual.getId());
     assertEquals(STAGE, actual.getStageId());
   }
+
+  @Test
+  @DisplayName("toBotUser - accepts null")
+  void toBotUserEntity_acceptsNull() {
+    assertNull(subject.toBotUserEntity(null));
+  }
+
 }
