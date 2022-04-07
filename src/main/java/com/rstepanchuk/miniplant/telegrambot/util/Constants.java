@@ -13,6 +13,7 @@ public class Constants {
     public static final String MAIN = "STAGE_MAIN";
     public static final String UNDEFINED = "STAGE_UNDEFINED";
     public static final String ACCOUNTING_INC_EXP = "STAGE_INCOME_EXPENSE";
+    public static final String GOOGLE_AUTH = "STAGE_GOOGLE_AUTH";
   }
 
   //  public static class Buttons {
@@ -41,10 +42,18 @@ public class Constants {
         + "горе-програмісту чоловіку, що мені погано";
     public static final String TELEGRAM_EXCEPTION = "Схоже, щось зламалось в Телеграмі. Розкажи "
         + "Ростику, йому буде цікаво";
+    public static final String GOOGLE_API_EXCEPTION = "Упс, я цього боявся - щось не так з "
+        + "табличками Google.";
     public static final String GOOGLE_AUTH_EXCEPTION = "Мені не вдається зайти до твого акаунту "
         + "в Google, і я не можу з цим нічого зробити :(";
-    public static final String FOLLOW_AUTH_URL = "Я не можу зайти в твій акаунт Google. Будь "
+    public static final String AUTHENTICATION_REQUIRED = "Потрібно авторизуватись в "
+        + "табличках";
+    public static final String FOLLOW_AUTH_URL = "Будь "
         + "ласка, пройди за "
-        + "посиланням і передай, що я від тебе";
+        + "посиланням і передай Google, що я від тебе";
+    public static final String SHEETS_NOT_SET_UP = "Я не можу знайти у себе, в яку табличку це "
+        + "записувати :(";
+    public static final String CANT_APPEND_ROW = "Не виходить вставити рядок в Google Sheets. "
+        + "Я не винний (хочеться вірити)";
   }
 }

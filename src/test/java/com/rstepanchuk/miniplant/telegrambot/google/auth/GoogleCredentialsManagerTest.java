@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,7 +24,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.google.GoogleCredentialStub;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
-import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
+import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +64,7 @@ class GoogleCredentialsManagerTest {
   private GoogleTokenResponse tokenResponse;
 
   @Test
-  @DisplayName("Uses stored if valid credentials present")
+  @DisplayName("getCredentials - uses stored if valid credentials present")
   void usesStoredCredentials() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
@@ -75,32 +74,30 @@ class GoogleCredentialsManagerTest {
         .thenReturn(credentialMock);
 
     // when
-    Credential credentials = subject.getCredentials(givenUpdate);
+    Credential credentials = subject.getCredentials(givenUpdate.getMessage().getFrom().getId());
 
     // then
     assertEquals(credentialMock, credentials);
   }
 
   @Test
-  @DisplayName("Authorizes when no stored credentials")
-  void authorizesIfNoStoredCredentials() throws IOException {
+  @DisplayName("getCredentials - throws GoogleAuthenticationException when no stored credentials")
+  void getCredentials_throwsExceptionIfNoStoredCredentials() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     GoogleCredentialStub expected = GoogleCredentialStub.createInstance();
     when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
         .thenReturn(null);
-    mockAuthorizationProcess(expected);
+    Long given = givenUpdate.getMessage().getFrom().getId();
 
-    // when
-    Credential actual = subject.getCredentials(givenUpdate);
-
-    //then
-    assertEquals(expected, actual);
-    verify(authCodeFlow).createAndStoreCredential(any(), eq(String.valueOf(DEFAULT_USER_ID)));
+    // when & then
+    assertThrows(GoogleAuthenticationException.class,
+        () -> subject.getCredentials(given));
   }
 
   @Test
-  @DisplayName("Authorizes when no expiration time and no refreshToken")
+  @DisplayName("getCredentials - throws auth exception when no expiration time and no "
+      + "refreshToken")
   void authorizesIfNoExpirationTimeAndToken() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
@@ -109,18 +106,18 @@ class GoogleCredentialsManagerTest {
 
     when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
         .thenReturn(invalidCredentials);
-    mockAuthorizationProcess(validCredentials);
 
-    // when
-    Credential actual = subject.getCredentials(givenUpdate);
+    Long id = givenUpdate.getMessage().getFrom().getId();
 
-    //then
-    assertEquals(validCredentials, actual);
-    verify(authCodeFlow).createAndStoreCredential(any(), eq(String.valueOf(DEFAULT_USER_ID)));
+    // when & then
+    assertThrows(
+        GoogleAuthenticationException.class,
+        () -> subject.getCredentials(id));
+
   }
 
   @Test
-  @DisplayName("Refreshes credentials if no expiration time & token present")
+  @DisplayName("getCredentials - refreshes credentials if no expiration time & token present")
   void refreshesIfNoExpirationTimeButRefreshTokenPresent() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
@@ -130,7 +127,7 @@ class GoogleCredentialsManagerTest {
         .thenReturn(credentialStub);
 
     // when
-    Credential credentials = subject.getCredentials(givenUpdate);
+    Credential credentials = subject.getCredentials(givenUpdate.getMessage().getFrom().getId());
 
     // then
     assertEquals(credentialStub, credentials);
@@ -140,60 +137,48 @@ class GoogleCredentialsManagerTest {
   }
 
   @Test
-  @DisplayName("Authorizes when token refresh unsuccessful")
+  @DisplayName("getCredentials - throws auth exception when token refresh unsuccessful")
   void authorizesIfTokenRefreshUnsuccessful() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     GoogleCredentialStub invalidCredential = GoogleCredentialStub.createInstance();
     invalidCredential.mockRefreshToken();
     invalidCredential.mockRefreshingTokenResult(false);
-
-    GoogleCredentialStub validCredential = GoogleCredentialStub.createInstance();
+    Long given = givenUpdate.getMessage().getFrom().getId();
 
     when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
         .thenReturn(invalidCredential);
-    mockAuthorizationProcess(validCredential);
 
-    // when
-    Credential actual = subject.getCredentials(givenUpdate);
-
-    // then
-    assertEquals(validCredential, actual);
-    verify(invalidCredential).refreshToken();
-    verify(authCodeFlow).createAndStoreCredential(any(), eq(String.valueOf(DEFAULT_USER_ID)));
+    // when & then
+    assertThrows(GoogleAuthenticationException.class, () ->
+        subject.getCredentials(given));
   }
 
   @Test
-  @DisplayName("Authorizes when token refresh throws Exception")
-  void authorizesIfTokenRefreshThrowsException() throws IOException {
+  @DisplayName("getCredentials - throws auth exception when token refresh throws Exception")
+  void getCredentials_throwsGoogleAuthenticationExceptionIfTokenRefreshThrowsException()
+      throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     GoogleCredentialStub invalidCredential = GoogleCredentialStub.createInstance();
     invalidCredential.mockRefreshToken();
     invalidCredential.setExceptionOnTokenRefresh();
-
-    GoogleCredentialStub validCredential = GoogleCredentialStub.createInstance();
+    Long given = givenUpdate.getMessage().getFrom().getId();
 
     when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
         .thenReturn(invalidCredential);
-    mockAuthorizationProcess(validCredential);
 
-    // when
-    Credential actual = subject.getCredentials(givenUpdate);
-
-    // then
-    assertEquals(validCredential, actual);
-    verify(invalidCredential).refreshToken();
-    verify(authCodeFlow).createAndStoreCredential(any(), eq(String.valueOf(DEFAULT_USER_ID)));
+    // when & then
+    assertThrows(
+        GoogleAuthenticationException.class,
+        () -> subject.getCredentials(given));
   }
 
   @Test
-  @DisplayName("When authorizing sends message to user with auth url")
-  void sendsMessageWithAuthUrl() throws IOException, TelegramApiException {
+  @DisplayName("authorize - when authorizing sends message to user with auth url")
+  void authorize_sendsMessageWithAuthUrl() throws IOException, TelegramApiException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
-    when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
-        .thenReturn(null);
     mockAuthorizationProcess(null);
     String authUrl = getGoogleAuthorizationCodeRequestUrlStub().build();
     SendMessage expectedMessage1 = MessageBuilder.basicMessage(givenUpdate, FOLLOW_AUTH_URL);
@@ -202,7 +187,7 @@ class GoogleCredentialsManagerTest {
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
     // when
-    subject.getCredentials(givenUpdate);
+    subject.authorize(bot, givenUpdate);
 
     // then
     verify(bot, times(2)).execute(messageCaptor.capture());
@@ -212,16 +197,14 @@ class GoogleCredentialsManagerTest {
   }
 
   @Test
-  @DisplayName("When authorizing captures code with receiver")
-  void capturesCodeWithCodeReceiver() throws IOException {
+  @DisplayName("authorize - when authorizing captures code with receiver")
+  void authorize_capturesCodeWithCodeReceiver() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
-    when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
-        .thenReturn(null);
     mockAuthorizationProcess(null);
 
     // when
-    subject.getCredentials(givenUpdate);
+    subject.authorize(bot, givenUpdate);
 
     // then
     verify(receiver).getRedirectUri();
@@ -234,45 +217,40 @@ class GoogleCredentialsManagerTest {
   void receiverStoppedWhenSuccess() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
-    when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
-        .thenReturn(null);
     mockAuthorizationProcess(null);
 
     // when
-    subject.getCredentials(givenUpdate);
+    subject.authorize(bot, givenUpdate);
 
     // then
     verify(receiver).stop();
   }
 
   @Test
-  @DisplayName("When authorizing fails receiver is still stopped")
-  void receiverStoppedWhenAuthFails() throws IOException {
+  @DisplayName("authorize - when authorizing fails receiver is still stopped")
+  void authorize_receiverStoppedWhenAuthFails() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
-    when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
-        .thenReturn(null);
     when(receiver.getRedirectUri()).thenThrow(IOException.class);
 
     // when
-    assertThrows(GoogleApiException.class, () -> subject.getCredentials(givenUpdate));
+    assertThrows(GoogleAuthenticationException.class,
+        () -> subject.authorize(bot, givenUpdate));
 
     // then
     verify(receiver).stop();
   }
 
   @Test
-  @DisplayName("Receiver stopping fail doesn't crush the exectution")
-  void noExceptionThrownIfReceiverFailsToStop() throws IOException {
+  @DisplayName("authorize - receiver stopping fail doesn't crush the exectution")
+  void authorize_noExceptionThrownIfReceiverFailsToStop() throws IOException {
     // given
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
-    when(authCodeFlow.loadCredential(String.valueOf(DEFAULT_USER_ID)))
-        .thenReturn(null);
     mockAuthorizationProcess(null);
     doThrow(IOException.class).when(receiver).stop();
 
     // when & then
-    assertDoesNotThrow(() -> subject.getCredentials(givenUpdate));
+    assertDoesNotThrow(() -> subject.authorize(bot, givenUpdate));
   }
 
   private void mockAuthorizationProcess(Credential output) throws IOException {

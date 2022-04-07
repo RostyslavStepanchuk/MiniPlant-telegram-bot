@@ -2,7 +2,6 @@ package com.rstepanchuk.miniplant.telegrambot.bot;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.TELEGRAM_EXCEPTION;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +70,8 @@ class MiniPlantBotTest {
 
   @Test
   @DisplayName("Should notify user if application exception")
-  void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack() throws TelegramApiException {
+  void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack()
+      throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
 
     doThrow(new MessageValidationException(EXCEPTION_TEST_MSG))
@@ -116,19 +116,6 @@ class MiniPlantBotTest {
     verify(miniPlantBot).execute(sendMessageCaptor.capture());
     SendMessage capturedMessage = sendMessageCaptor.getValue();
     assertEquals(TELEGRAM_EXCEPTION, capturedMessage.getText());
-  }
-
-  @Test
-  @DisplayName("Telegram API exception scenario covered for sending error messages")
-  void noExceptionThrownWhenMessagingAboutError() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
-
-    doThrow(new RuntimeException(EXCEPTION_TEST_MSG))
-        .when(dialogStageHandler).handleStage(any(), any(), any());
-    doThrow(new TelegramApiException(EXCEPTION_TEST_MSG))
-        .when(miniPlantBot).execute(any(SendMessage.class));
-
-    assertDoesNotThrow(() -> miniPlantBot.onUpdateReceived(update));
   }
 
   @Test

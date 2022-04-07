@@ -12,7 +12,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
+import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +42,8 @@ class GoogleAuthorizationUtilsTest {
     when(env.getProperty("sheets.secrets_path")).thenReturn(SECRETS_PATH);
     when(env.getProperty("sheets.tokens_path")).thenReturn(TOKENS_PATH);
 
-    GoogleAuthorizationCodeFlow codeFlow = GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
+    GoogleAuthorizationCodeFlow codeFlow =
+        GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
 
     verify(env).getProperty("sheets.client_id");
     verify(env).getProperty("sheets.client_secret");
@@ -62,7 +63,8 @@ class GoogleAuthorizationUtilsTest {
     List<String> expectedScopes =
         Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
-    GoogleAuthorizationCodeFlow codeFlow = GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
+    GoogleAuthorizationCodeFlow codeFlow =
+        GoogleAuthorizationUtils.createCodeFlow(env, httpTransport);
 
     assertIterableEquals(expectedScopes, codeFlow.getScopes());
   }
@@ -75,7 +77,8 @@ class GoogleAuthorizationUtilsTest {
     when(env.getProperty("sheets.secrets_path")).thenReturn(SECRETS_PATH_INVALID);
     when(env.getProperty("sheets.tokens_path")).thenReturn(TOKENS_PATH);
 
-    assertThrows(GoogleApiException.class, ()-> GoogleAuthorizationUtils.createCodeFlow(env, httpTransport));
+    assertThrows(GoogleAuthenticationException.class,
+        () -> GoogleAuthorizationUtils.createCodeFlow(env, httpTransport));
   }
 
 }

@@ -6,7 +6,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
 public class GoogleServiceFactory {
@@ -17,13 +16,14 @@ public class GoogleServiceFactory {
   private final GoogleCredentialsManager googleCredentialsManager;
   private final HttpTransport httpTransport;
 
-  public Sheets getSheetsService(Update update) {
-    return new Sheets.Builder(
+  public GoogleSheetsClient getSheetsService(Long userId) {
+    Sheets sheets = new Sheets.Builder(
         httpTransport,
         GsonFactory.getDefaultInstance(),
-        googleCredentialsManager.getCredentials(update))
+        googleCredentialsManager.getCredentials(userId))
         .setApplicationName(applicationName)
         .build();
+    return new GoogleSheetsClient(sheets);
   }
 
 }

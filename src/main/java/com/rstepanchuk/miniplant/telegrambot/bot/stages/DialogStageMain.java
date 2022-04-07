@@ -10,14 +10,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class DialogStageMain implements DialogStage {
 
   @Override
-  public void execute(Update update, TelegramLongPollingBot bot) throws TelegramApiException {
+  public String execute(Update update, TelegramLongPollingBot bot) throws TelegramApiException {
     bot.execute(
         MessageBuilder.basicMessage(update, "MAIN will be executed")
     );
-  }
-
-  @Override
-  public String getNextStage() {
     return ACCOUNTING_INC_EXP;
   }
 }

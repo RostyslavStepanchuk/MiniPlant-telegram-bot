@@ -36,7 +36,7 @@ public class TelegramTestMessage {
       return this;
     }
 
-    public MessageBuilder from (User from) {
+    public MessageBuilder from(User from) {
       this.from = from;
       return this;
     }

@@ -44,7 +44,7 @@ public class GoogleCredentialStub extends Credential {
     return refreshingTokenExpectedResult ? Mockito.mock(TokenResponse.class) : null;
   }
 
-  public void mockRefreshToken(){
+  public void mockRefreshToken() {
     setRefreshToken(REFRESH_TOKEN);
   }
 

@@ -1,11 +1,12 @@
 package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_UNKNOWN;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.MAIN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
+import com.rstepanchuk.miniplant.telegrambot.util.Constants;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @ExtendWith(MockitoExtension.class)
 class DialogStageUndefinedTest {
 
-  private final DialogStageUndefined dialogStageUndefined = new DialogStageUndefined();
+  private final DialogStageUndefined subject = new DialogStageUndefined();
 
   @Mock
   private TelegramLongPollingBot bot;
@@ -31,7 +32,7 @@ class DialogStageUndefinedTest {
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
     // when
-    dialogStageUndefined.execute(update, bot);
+    subject.execute(update, bot);
 
     // then
     verify(bot).execute(messageCaptor.capture());
@@ -40,7 +41,11 @@ class DialogStageUndefinedTest {
   }
 
   @Test
-  void getNextStage_shouldPointToMainStage() {
-    assertEquals(MAIN, dialogStageUndefined.getNextStage());
+  @DisplayName("execute - returns MAIN stage")
+  void execute_returnsMainStage() throws TelegramApiException {
+    Update update = TelegramTestUpdate.getBasicUpdate();
+    String actual = subject.execute(update, bot);
+    assertEquals(Constants.Stages.MAIN, actual);
   }
+
 }

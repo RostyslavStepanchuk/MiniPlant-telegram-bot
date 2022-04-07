@@ -90,6 +90,16 @@
             <version>3.3.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -104,6 +114,11 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>1.18.20</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.4.2.Final</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -155,6 +170,10 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
+                    <sourceDirectories>
+                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                        <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+                    </sourceDirectories>
                     <configLocation>./google_checks.xml</configLocation>
                     <encoding>utf-8</encoding>
                     <consoleOutput>true</consoleOutput>

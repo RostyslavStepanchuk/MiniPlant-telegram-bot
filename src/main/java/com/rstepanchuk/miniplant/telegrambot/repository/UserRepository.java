@@ -1,7 +1,11 @@
 package com.rstepanchuk.miniplant.telegrambot.repository;
 
+import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<BotUser, Long> {
+public interface UserRepository {
+
+  void save(BotUser user);
+
+  Optional<BotUser> findById(Long userId);
 }
