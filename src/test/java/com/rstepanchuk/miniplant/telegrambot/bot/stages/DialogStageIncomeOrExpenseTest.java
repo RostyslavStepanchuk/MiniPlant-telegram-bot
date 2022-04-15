@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,8 @@ class DialogStageIncomeOrExpenseTest {
   @Test
   void execute() throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
-    subject.execute(update, bot);
+    BotUser user = new BotUser();
+    subject.execute(update, bot, user);
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
     verify(bot).execute(messageCaptor.capture());
@@ -40,7 +42,8 @@ class DialogStageIncomeOrExpenseTest {
   @DisplayName("execute - returns MAIN stage")
   void execute_returnsMainStage() throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
-    String actual = subject.execute(update, bot);
+    BotUser user = new BotUser();
+    String actual = subject.execute(update, bot, user);
     assertEquals(Constants.Stages.MAIN, actual);
   }
 

@@ -73,7 +73,7 @@ class DialogStageHandlerTest {
     subject.handleStage(update, user, bot);
 
     verify(context).getBean(MAIN, DialogStage.class);
-    verify(dialogStage).execute(update, bot);
+    verify(dialogStage).execute(update, bot, user);
   }
 
   @Test
@@ -87,7 +87,7 @@ class DialogStageHandlerTest {
 
     subject.handleStage(update, user, bot);
 
-    verify(dialogStage).execute(update, bot);
+    verify(dialogStage).execute(update, bot, user);
   }
 
   @Test
@@ -97,7 +97,7 @@ class DialogStageHandlerTest {
     BotUser user = getTestBotUser();
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
-    doReturn(ACCOUNTING_INC_EXP).when(dialogStage).execute(any(), any());
+    doReturn(ACCOUNTING_INC_EXP).when(dialogStage).execute(any(), any(), eq(user));
 
     subject.handleStage(update, user, bot);
 
@@ -114,7 +114,7 @@ class DialogStageHandlerTest {
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
     doThrow(new ApplicationException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot);
+        .when(dialogStage).execute(update, bot, user);
 
     subject.handleStage(update, user, bot);
 
@@ -134,7 +134,7 @@ class DialogStageHandlerTest {
 
     when(context.getBean(UNDEFINED, DialogStage.class)).thenReturn(dialogStage);
     doThrow(new ApplicationException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot);
+        .when(dialogStage).execute(update, bot, user);
 
     subject.handleStage(update, user, bot);
 
@@ -150,7 +150,7 @@ class DialogStageHandlerTest {
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
     doThrow(new RuntimeException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot);
+        .when(dialogStage).execute(update, bot, user);
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
     subject.handleStage(update, user, bot);
@@ -171,7 +171,7 @@ class DialogStageHandlerTest {
 
     GoogleAuthenticationException authException =
         new GoogleAuthenticationException(exceptionMessage);
-    when(dialogStage.execute(givenUpdate, bot))
+    when(dialogStage.execute(givenUpdate, bot, givenUser))
         .thenThrow(authException)
         .thenReturn(null);
 
@@ -194,7 +194,7 @@ class DialogStageHandlerTest {
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     BotUser givenUser = getTestBotUser();
 
-    when(dialogStage.execute(givenUpdate, bot))
+    when(dialogStage.execute(givenUpdate, bot, givenUser))
         .thenThrow(new GoogleAuthenticationException("testMessage"))
         .thenReturn(null);
 
@@ -207,7 +207,7 @@ class DialogStageHandlerTest {
 
     // then
     verify(context).getBean(Stages.GOOGLE_AUTH, DialogStage.class);
-    verify(authStageMock).execute(givenUpdate, bot);
+    verify(authStageMock).execute(givenUpdate, bot, givenUser);
   }
 
   @Test
@@ -218,7 +218,7 @@ class DialogStageHandlerTest {
     Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
     BotUser givenUser = getTestBotUser();
 
-    when(dialogStage.execute(givenUpdate, bot))
+    when(dialogStage.execute(givenUpdate, bot, givenUser))
         .thenThrow(new GoogleAuthenticationException("testMessage"))
         .thenReturn(null);
 

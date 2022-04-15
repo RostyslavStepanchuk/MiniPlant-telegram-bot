@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,8 @@ class DialogStageGoogleAuthTest {
   @Test
   void execute_triggersAuthorization() throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
-    subject.execute(update, bot);
+    BotUser user = new BotUser();
+    subject.execute(update, bot, user);
     verify(credentialsManager).authorize(bot, update);
   }
 
@@ -40,7 +42,8 @@ class DialogStageGoogleAuthTest {
   @Test
   void execute_returnsMainStage() throws TelegramApiException {
     Update update = TelegramTestUpdate.getBasicUpdate();
-    String actual = subject.execute(update, bot);
+    BotUser user = new BotUser();
+    String actual = subject.execute(update, bot, user);
     assertEquals(Constants.Stages.MAIN, actual);
   }
 

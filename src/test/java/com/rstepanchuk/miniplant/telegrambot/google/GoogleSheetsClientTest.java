@@ -71,7 +71,7 @@ class GoogleSheetsClientTest {
     mockSpreadsheetsChain();
 
     // when
-    subject.appendRow(credentials, RANGE, values);
+    subject.appendRow(credentials, values);
 
     // then
     verify(sheets).spreadsheets();
@@ -90,7 +90,7 @@ class GoogleSheetsClientTest {
     mockSpreadsheetsChain();
 
     // when
-    subject.appendRow(credentials, RANGE, givenValues);
+    subject.appendRow(credentials, givenValues);
 
     // then
     verify(values).append(eq(SHEET_ID), any(), any());
@@ -102,12 +102,13 @@ class GoogleSheetsClientTest {
     // given
     SheetPageEntity credentials = new SheetPageEntity();
     credentials.setPageName(PAGE_NAME);
+    credentials.setRange(RANGE);
     ArrayList<Object> givenValues = new ArrayList<>();
 
     mockSpreadsheetsChain();
 
     // when
-    subject.appendRow(credentials, RANGE, givenValues);
+    subject.appendRow(credentials, givenValues);
 
     // then
     verify(values).append(any(), eq(FULL_RANGE), any());
@@ -125,7 +126,7 @@ class GoogleSheetsClientTest {
     mockSpreadsheetsChain();
 
     // when
-    subject.appendRow(credentials, RANGE, givenValues);
+    subject.appendRow(credentials, givenValues);
 
     // then
     verify(values).append(any(), any(), eq(expectedRange));
@@ -141,7 +142,7 @@ class GoogleSheetsClientTest {
     mockSpreadsheetsChain();
 
     // when
-    subject.appendRow(credentials, RANGE, givenValues);
+    subject.appendRow(credentials, givenValues);
 
     // then
     verify(append).setValueInputOption(RAW_INPUT_OPTION);
@@ -157,7 +158,7 @@ class GoogleSheetsClientTest {
     mockSpreadsheetsChain();
 
     // when
-    AppendValuesResponse actual = subject.appendRow(credentials, RANGE, givenValues);
+    AppendValuesResponse actual = subject.appendRow(credentials, givenValues);
 
     // then
     verify(append).execute();
@@ -179,7 +180,7 @@ class GoogleSheetsClientTest {
 
     // when & then
     assertThrows(GoogleApiException.class,
-        () -> subject.appendRow(credentials, RANGE, givenValues));
+        () -> subject.appendRow(credentials, givenValues));
   }
 
 }
