@@ -1,6 +1,7 @@
 package com.rstepanchuk.miniplant.telegrambot.repository.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -110,4 +111,17 @@ class AccountingRecordMapperTest {
     assertEquals(expectedUser, actual.getUser());
     assertEquals(recordEnteredDate, actual.getEntered());
   }
+
+  @Test
+  @DisplayName("toAccountingRecord - accepts null")
+  void toAccountingRecord_acceptsNull() {
+    assertNull(subject.toAccountingRecord(null));
+  }
+
+  @Test
+  @DisplayName("toAccountingRecordEntity - accepts null")
+  void toAccountingRecordEntity_acceptsNull() {
+    assertNull(subject.toAccountingRecordEntity(null));
+  }
+
 }
