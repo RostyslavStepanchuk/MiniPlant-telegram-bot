@@ -18,25 +18,15 @@ public class GoogleSheetsClient {
 
   private final Sheets sheets;
 
-  //  public ValueRange getColumns(String rangeStart, String rangeEnd) throws IOException {
-  //    return buildGetRequest(rangeStart, rangeEnd)
-  //        .setMajorDimension("COLUMNS")
-  //        .execute();
-  //  }
-  //
-  //  public ValueRange getRows(String rangeStart, String rangeEnd) throws IOException {
-  //    return buildGetRequest(rangeStart, rangeEnd)
-  //        .execute();
-  //  }
-
-  public AppendValuesResponse appendRow(SheetPageEntity credentials,
-                                        String range, List<Object> values) {
+  public AppendValuesResponse appendRow(SheetPageEntity credentials, List<Object> rowValues) {
     ValueRange valueRange = new ValueRange();
-    valueRange.setValues(List.of(values));
+    valueRange.setValues(List.of(rowValues));
     try {
       return sheets.spreadsheets()
           .values()
-          .append(credentials.getSheetId(), credentials.getPageName() + "!" + range, valueRange)
+          .append(credentials.getSheetId(),
+              credentials.getPageName() + "!" + credentials.getRange(),
+              valueRange)
           .setValueInputOption("RAW")
           .execute();
     } catch (IOException e) {
@@ -44,13 +34,5 @@ public class GoogleSheetsClient {
       throw new GoogleApiException(CANT_APPEND_ROW);
     }
   }
-
-  //  private Sheets.Spreadsheets.Values.Get buildGetRequest(
-  //      String rangeStart,
-  //      String rangeEnd) throws IOException {
-  //    return sheets.spreadsheets()
-  //        .values()
-  //        .get(sheetId, "SPREADSHEET" + "!" + rangeStart + ":" + rangeEnd);
-  //  }
 
 }

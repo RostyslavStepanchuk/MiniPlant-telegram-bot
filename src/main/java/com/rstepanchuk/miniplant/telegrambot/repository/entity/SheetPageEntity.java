@@ -27,7 +27,11 @@ public class SheetPageEntity {
   @Column(name = "page_name")
   String pageName;
 
+  @Column(name = "range")
+  String range;
+
   @OneToOne
   @JoinColumn(name = "user_id_fk")
   BotUserEntity user;
+
 }

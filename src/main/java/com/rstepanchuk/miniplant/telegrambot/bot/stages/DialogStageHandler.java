@@ -47,12 +47,12 @@ public class DialogStageHandler {
   ) throws TelegramApiException {
     try {
       DialogStage currentStage = getStage(user.getStageId());
-      String nextStage = currentStage.execute(update, bot);
+      String nextStage = currentStage.execute(update, bot, user);
       updateUserStage(user, nextStage);
     } catch (GoogleAuthenticationException e) {
       bot.execute(MessageBuilder.basicMessage(update, e.getMessage()));
       DialogStage stage = getStage(Stages.GOOGLE_AUTH);
-      stage.execute(update, bot);
+      stage.execute(update, bot, user);
       handleStage(update, user, bot);
     } catch (ApplicationException e) {
       bot.execute(MessageBuilder.basicMessage(update, e.getMessage()));
