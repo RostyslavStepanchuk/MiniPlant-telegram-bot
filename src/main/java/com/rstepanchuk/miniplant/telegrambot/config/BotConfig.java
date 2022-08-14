@@ -1,6 +1,6 @@
 package com.rstepanchuk.miniplant.telegrambot.config;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageValidator;
+import com.rstepanchuk.miniplant.telegrambot.bot.UserFilter;
 import com.rstepanchuk.miniplant.telegrambot.bot.MiniPlantBot;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
@@ -17,14 +17,14 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 public class BotConfig {
 
   @Bean
-  TelegramLongPollingBot miniPlantBot(MessageValidator messageValidator,
+  TelegramLongPollingBot miniPlantBot(UserFilter userFilter,
                                       DialogStageHandler dialogStageHandler) {
-    return new MiniPlantBot(messageValidator, dialogStageHandler);
+    return new MiniPlantBot(userFilter, dialogStageHandler);
   }
 
   @Bean
-  MessageValidator messageValidator(UserRepository userRepository) {
-    return new MessageValidator(userRepository);
+  UserFilter userFilter(UserRepository userRepository) {
+    return new UserFilter(userRepository);
   }
 
   @Bean

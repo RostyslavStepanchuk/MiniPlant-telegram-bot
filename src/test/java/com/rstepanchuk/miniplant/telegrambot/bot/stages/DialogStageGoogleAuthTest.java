@@ -32,16 +32,16 @@ class DialogStageGoogleAuthTest {
   @DisplayName("execute - triggers credentialsManager authorization")
   @Test
   void execute_triggersAuthorization() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = new BotUser();
     subject.execute(update, bot, user);
-    verify(credentialsManager).authorize(bot, update);
+    verify(credentialsManager).authorize(bot, user);
   }
 
   @DisplayName("execute - returns MAIN stage")
   @Test
   void execute_returnsMainStage() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = new BotUser();
     String actual = subject.execute(update, bot, user);
     assertEquals(Constants.Stages.MAIN, actual);

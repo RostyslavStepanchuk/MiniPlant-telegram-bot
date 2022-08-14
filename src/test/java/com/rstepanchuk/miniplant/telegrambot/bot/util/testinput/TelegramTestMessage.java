@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 public class TelegramTestMessage {
 
-  private static final String DEFAULT_MESSAGE_TEXT = "hello";
+  public static final String DEFAULT_MESSAGE_TEXT = "hello";
 
   public static Message getBasicMessage() {
     return new MessageBuilder().build();

@@ -13,10 +13,10 @@ import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiv
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -55,19 +55,19 @@ public class GoogleCredentialsManager {
     }
   }
 
-  public Credential authorize(TelegramLongPollingBot bot, Update update) {
+  public Credential authorize(TelegramLongPollingBot bot, BotUser user) {
     try {
       String redirectUri = receiver.getRedirectUri();
       AuthorizationCodeRequestUrl authorizationUrl =
           authCodeFlow.newAuthorizationUrl().setRedirectUri(redirectUri);
 
-      bot.execute(MessageBuilder.basicMessage(update, FOLLOW_AUTH_URL));
-      bot.execute(MessageBuilder.basicMessage(update, authorizationUrl.build()));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), FOLLOW_AUTH_URL));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), authorizationUrl.build()));
       String code = receiver.waitForCode();
       TokenResponse response =
           authCodeFlow.newTokenRequest(code).setRedirectUri(redirectUri).execute();
       return authCodeFlow.createAndStoreCredential(response,
-          String.valueOf(update.getMessage().getFrom().getId()));
+          String.valueOf(user.getId()));
     } catch (Exception e) {
       log.error("Unable to authorize on Google", e);
       throw new GoogleAuthenticationException(GOOGLE_AUTH_EXCEPTION);

@@ -65,7 +65,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should take current stage from app context")
   void shouldTakeCurrentStageFromApplicationContext() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
@@ -79,7 +79,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should execute default stage if stage bean not found")
   void shouldReturnDefaultStage() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
     when(context.getBean(any(), eq(DialogStage.class)))
@@ -93,7 +93,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should update user stage")
   void shouldUpdateUserStage() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
@@ -108,7 +108,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should notify user if application error")
   void shouldNotifyUserInCaseOfError() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
@@ -128,7 +128,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should reset user stage to MAIN if application error")
   void shouldResetUserStageToMainInCaseOfError() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
     user.setStageId(UNDEFINED);
 
@@ -145,7 +145,7 @@ class DialogStageHandlerTest {
   @Test
   @DisplayName("Should notify if unexpected error")
   void shouldNotifyInCaseOfMajorError() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
@@ -166,7 +166,7 @@ class DialogStageHandlerTest {
       throws TelegramApiException {
     // given
     String exceptionMessage = "testMessage";
-    Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser givenUser = getTestBotUser();
 
     GoogleAuthenticationException authException =
@@ -183,7 +183,7 @@ class DialogStageHandlerTest {
     subject.handleStage(givenUpdate, givenUser, bot);
 
     // then
-    verify(bot).execute(MessageBuilder.basicMessage(givenUpdate, exceptionMessage));
+    verify(bot).execute(MessageBuilder.basicMessage(givenUser.getId(), exceptionMessage));
   }
 
   @Test
@@ -191,7 +191,7 @@ class DialogStageHandlerTest {
   void handleStage_whenGoogleAuthenticationException_shouldExecuteGoogleAuthStage()
       throws TelegramApiException {
     // given
-    Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser givenUser = getTestBotUser();
 
     when(dialogStage.execute(givenUpdate, bot, givenUser))
@@ -215,7 +215,7 @@ class DialogStageHandlerTest {
   void handleStage_whenGoogleAuthenticationException_shouldRepeatCurrentStage()
       throws TelegramApiException {
     // given
-    Update givenUpdate = TelegramTestUpdate.getBasicUpdate();
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser givenUser = getTestBotUser();
 
     when(dialogStage.execute(givenUpdate, bot, givenUser))

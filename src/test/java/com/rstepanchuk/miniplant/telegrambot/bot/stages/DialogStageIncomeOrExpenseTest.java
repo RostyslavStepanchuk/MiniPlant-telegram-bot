@@ -28,7 +28,7 @@ class DialogStageIncomeOrExpenseTest {
 
   @Test
   void execute() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = new BotUser();
     subject.execute(update, bot, user);
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
@@ -41,7 +41,7 @@ class DialogStageIncomeOrExpenseTest {
   @Test
   @DisplayName("execute - returns MAIN stage")
   void execute_returnsMainStage() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = new BotUser();
     String actual = subject.execute(update, bot, user);
     assertEquals(Constants.Stages.MAIN, actual);

@@ -15,7 +15,7 @@ public class DialogStageUndefined implements DialogStage {
   public String execute(Update update, TelegramLongPollingBot bot, BotUser user)
       throws TelegramApiException {
     bot.execute(
-        MessageBuilder.basicMessage(update, STAGE_UNKNOWN)
+        MessageBuilder.basicMessage(user.getId(), STAGE_UNKNOWN)
     );
     return Constants.Stages.MAIN;
   }

@@ -29,7 +29,7 @@ class DialogStageUndefinedTest {
   @Test
   void execute_shouldReturnValidUserMessage() throws TelegramApiException {
     // given
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
     BotUser user = new BotUser();
 
@@ -45,7 +45,7 @@ class DialogStageUndefinedTest {
   @Test
   @DisplayName("execute - returns MAIN stage")
   void execute_returnsMainStage() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = new BotUser();
     String actual = subject.execute(update, bot, user);
     assertEquals(Constants.Stages.MAIN, actual);

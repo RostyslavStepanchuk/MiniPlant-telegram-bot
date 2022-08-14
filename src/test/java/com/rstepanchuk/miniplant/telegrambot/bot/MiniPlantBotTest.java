@@ -1,19 +1,22 @@
 package com.rstepanchuk.miniplant.telegrambot.bot;
 
+import static com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUser.DEFAULT_USER_ID;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.TELEGRAM_EXCEPTION;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
-import com.rstepanchuk.miniplant.telegrambot.exception.MessageValidationException;
+import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,49 +40,37 @@ class MiniPlantBotTest {
   private MiniPlantBot miniPlantBot;
 
   @Mock
-  private MessageValidator messageValidator;
+  private UserFilter userFilter;
 
   @Mock
   private DialogStageHandler dialogStageHandler;
 
   @Test
-  @DisplayName("Ignore updates without packages")
-  void ignoreUpdatesWithoutMessage() throws TelegramApiException {
-    Update update = new Update();
-
-    miniPlantBot.onUpdateReceived(update);
-
-    verify(messageValidator, never()).validateMessage(update.getMessage());
-    verify(miniPlantBot, never()).execute(any(SendMessage.class));
-    verify(dialogStageHandler, never()).handleStage(any(), any(), any());
-  }
-
-  @Test
-  @DisplayName("Handle valid updates")
-  void handleValidUpdate() throws TelegramApiException {
+  @DisplayName("processUpdate - handles valid updates")
+  void processUpdate_handleValidUpdate() throws TelegramApiException {
     final BotUser user = new BotUser();
-    Update update = TelegramTestUpdate.getBasicUpdate();
-    when(messageValidator.validateMessage(update.getMessage()))
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
+    when(userFilter.authorizeUser(user.getId()))
         .thenReturn(user);
 
-    miniPlantBot.onUpdateReceived(update);
+    miniPlantBot.processUpdate(user.getId(), update);
 
-    verify(messageValidator, times(1)).validateMessage(update.getMessage());
+    verify(userFilter, times(1)).authorizeUser(user.getId());
     verify(dialogStageHandler, times(1)).handleStage(update, user, miniPlantBot);
   }
 
   @Test
-  @DisplayName("Should notify user if application exception")
-  void onUpdateReceived_whenMessageIsInvalid_shouldSendFailureMessageBack()
+  @DisplayName("processUpdate - should notify user if application exception")
+  void processUpdate_whenMessageIsInvalid_shouldSendFailureMessageBack()
       throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
-
-    doThrow(new MessageValidationException(EXCEPTION_TEST_MSG))
-        .when(messageValidator).validateMessage(update.getMessage());
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
+    Long userId = 1L;
+    doThrow(new ApplicationException(EXCEPTION_TEST_MSG))
+        .when(userFilter).authorizeUser(any());
 
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
-    miniPlantBot.onUpdateReceived(update);
+    miniPlantBot.processUpdate(userId, update);
 
     verify(miniPlantBot).execute(sendMessageCaptor.capture());
 
@@ -88,14 +79,15 @@ class MiniPlantBotTest {
   }
 
   @Test
-  @DisplayName("Should notify user if unexpected exception")
-  void onUpdateReceived_whenExceptionOccur_shouldNotifyUser() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+  @DisplayName("processUpdate - should notify user if unexpected exception")
+  void processUpdate_whenExceptionOccur_shouldNotifyUser() throws TelegramApiException {
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
+    long userId = 1L;
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
     doThrow(new RuntimeException(EXCEPTION_TEST_MSG))
-        .when(messageValidator).validateMessage(update.getMessage());
+        .when(userFilter).authorizeUser(any());
 
-    miniPlantBot.onUpdateReceived(update);
+    miniPlantBot.processUpdate(userId, update);
 
     verify(miniPlantBot).execute(sendMessageCaptor.capture());
     SendMessage capturedMessage = sendMessageCaptor.getValue();
@@ -103,19 +95,46 @@ class MiniPlantBotTest {
   }
 
   @Test
-  @DisplayName("Should notify user if Telegram exception")
-  void onUpdateReceived_whenTelegramExceptionOccur_shouldNotifyUser() throws TelegramApiException {
-    Update update = TelegramTestUpdate.getBasicUpdate();
+  @DisplayName("processUpdate - should notify user if Telegram exception")
+  void processUpdate_whenTelegramExceptionOccur_shouldNotifyUser() throws TelegramApiException {
+    Update update = TelegramTestUpdate.getBasicMessageUpdate();
+    long userId = 1L;
 
     ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
     doThrow(new TelegramApiException(EXCEPTION_TEST_MSG))
         .when(dialogStageHandler).handleStage(any(), any(), any());
 
-    miniPlantBot.onUpdateReceived(update);
+    miniPlantBot.processUpdate(userId, update);
 
     verify(miniPlantBot).execute(sendMessageCaptor.capture());
     SendMessage capturedMessage = sendMessageCaptor.getValue();
     assertEquals(TELEGRAM_EXCEPTION, capturedMessage.getText());
+  }
+
+  @Test
+  @DisplayName("onUpdateReceived - processes update if userId is present")
+  void onUpdateReceived_shouldProcessUpdateIfUserIdPresent() {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    doReturn(Optional.of(DEFAULT_USER_ID)).when(userFilter).getUserId(any());
+    doNothing().when(miniPlantBot).processUpdate(any(), any());
+
+    // when & then
+    miniPlantBot.onUpdateReceived(givenUpdate);
+    verify(userFilter).getUserId(givenUpdate);
+    verify(miniPlantBot).processUpdate(DEFAULT_USER_ID, givenUpdate);
+  }
+
+  @Test
+  @DisplayName("onUpdateReceived - ignores update if userId is missing")
+  void onUpdateReceived_shouldIgnoreUpdatesIfUnableToGerUserId() {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    doReturn(Optional.empty()).when(userFilter).getUserId(any());
+
+    // when & then
+    miniPlantBot.onUpdateReceived(givenUpdate);
+    verify(miniPlantBot, times(0)).processUpdate(any(), any());
   }
 
   @Test

@@ -12,7 +12,8 @@ public class DialogStageIncomeOrExpense implements DialogStage {
   @Override
   public String execute(Update update, TelegramLongPollingBot bot, BotUser user)
       throws TelegramApiException {
-    bot.execute(MessageBuilder.basicMessage(update, "Expense choice will be executed"));
+    bot.execute(MessageBuilder.basicMessage(update.getMessage().getChatId(),
+        "Expense choice will be executed"));
     return Constants.Stages.MAIN;
   }
 }

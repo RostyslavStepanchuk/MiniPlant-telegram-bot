@@ -50,16 +50,16 @@ public class DialogStageHandler {
       String nextStage = currentStage.execute(update, bot, user);
       updateUserStage(user, nextStage);
     } catch (GoogleAuthenticationException e) {
-      bot.execute(MessageBuilder.basicMessage(update, e.getMessage()));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
       DialogStage stage = getStage(Stages.GOOGLE_AUTH);
       stage.execute(update, bot, user);
       handleStage(update, user, bot);
     } catch (ApplicationException e) {
-      bot.execute(MessageBuilder.basicMessage(update, e.getMessage()));
-      bot.execute(MessageBuilder.basicMessage(update, STAGE_WILL_BE_RESET));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), STAGE_WILL_BE_RESET));
       updateUserStage(user, Stages.MAIN);
     } catch (Exception e) {
-      bot.execute(MessageBuilder.basicMessage(update, UNEXPECTED_ERROR));
+      bot.execute(MessageBuilder.basicMessage(user.getId(), UNEXPECTED_ERROR));
     }
 
   }

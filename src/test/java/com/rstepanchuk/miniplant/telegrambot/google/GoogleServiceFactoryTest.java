@@ -28,7 +28,7 @@ class GoogleServiceFactoryTest {
   @Test
   @DisplayName("Returns Sheets client")
   void getSheetsService() {
-    Update basicUpdate = TelegramTestUpdate.getBasicUpdate();
+    Update basicUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     GoogleSheetsClient sheetsService =
         subject.getSheetsService(basicUpdate.getMessage().getFrom().getId());
 
