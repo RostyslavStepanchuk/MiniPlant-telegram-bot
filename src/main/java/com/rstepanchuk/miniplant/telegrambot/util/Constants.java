@@ -11,6 +11,7 @@ public class Constants {
     public static final String MAIN = "STAGE_MAIN";
     public static final String UNDEFINED = "STAGE_UNDEFINED";
     public static final String ACCOUNTING_INC_EXP = "STAGE_INCOME_EXPENSE";
+    public static final String ACCOUNT_SELECTION = "STAGE_ACCOUNT_SELECTION";
     public static final String GOOGLE_AUTH = "STAGE_GOOGLE_AUTH";
   }
 
@@ -52,5 +53,12 @@ public class Constants {
         + "яку потрібно записати?";
     public static final String CANNOT_READ_UPDATE = "Мені такого ще ніхто не присилав, не "
         + "знаю, як це прочитати";
+    public static final String RECORD_FINISHED = "Записав, поки, що є. Не забудь потім "
+        + "довнести:\n%s";
+    public static final String RECORD_DELETED = "Ну нє - то нє. Видаляю запис:\n%s";
+    public static final String CANCELLED_GENERAL = "Добре, відміняємо";
+    public static final String SKIPPED_GENERAL = "Добре, пропускаємо";
+    public static final String INCOME_ACCOUNT_REQUEST = "Як отримали?";
+    public static final String EXPENSE_ACCOUNT_REQUEST = "Як сплатили?";
   }
 }

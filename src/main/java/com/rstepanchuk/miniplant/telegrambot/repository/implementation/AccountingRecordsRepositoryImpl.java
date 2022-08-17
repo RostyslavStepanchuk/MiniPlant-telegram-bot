@@ -31,6 +31,11 @@ public class AccountingRecordsRepositoryImpl implements AccountingRecordsReposit
   }
 
   @Override
+  public void deleteRecord(AccountingRecord accountingRecord) {
+    jpa.deleteById(accountingRecord.getId());
+  }
+
+  @Override
   public AccountingRecord getCurrentRecord(BotUser user) {
     return jpa.findByUserIdEquals(user.getId())
         .map(mapper::toAccountingRecord)

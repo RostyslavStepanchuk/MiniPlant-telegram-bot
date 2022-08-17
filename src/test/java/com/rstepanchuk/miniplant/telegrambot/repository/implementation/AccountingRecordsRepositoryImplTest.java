@@ -236,4 +236,20 @@ class AccountingRecordsRepositoryImplTest {
     // when & then
     assertFalse(subject.recordIsComplete(given));
   }
+
+  @Test
+  @DisplayName("deleteRecord - deletes record")
+  void deleteRecord_shouldDeleteRecord() {
+    // given
+    long recordId = 1L;
+    AccountingRecord given = new AccountingRecord();
+    given.setId(recordId);
+
+    // when
+    subject.deleteRecord(given);
+
+    // then
+    verify(jpa).deleteById(recordId);
+  }
+
 }
