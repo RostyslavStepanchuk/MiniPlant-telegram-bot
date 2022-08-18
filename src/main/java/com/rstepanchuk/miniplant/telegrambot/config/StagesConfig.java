@@ -1,6 +1,5 @@
 package com.rstepanchuk.miniplant.telegrambot.config;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageAccountSelection;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageGoogleAuth;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageIncomeOrExpense;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageMain;
@@ -27,11 +26,6 @@ public class StagesConfig {
   @Bean(name = Constants.Stages.ACCOUNTING_INC_EXP)
   DialogStageIncomeOrExpense dialogStageIncomeExpenseChoice(AccountingService accountingService) {
     return new DialogStageIncomeOrExpense(accountingService);
-  }
-
-  @Bean(name = Constants.Stages.ACCOUNT_SELECTION)
-  DialogStageAccountSelection dialogStageAccountSelection(AccountingService accountingService) {
-    return new DialogStageAccountSelection();
   }
 
   @Bean(name = Constants.Stages.GOOGLE_AUTH)
