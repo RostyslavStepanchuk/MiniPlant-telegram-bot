@@ -5,6 +5,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageIncomeOrExpen
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageMain;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
+import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsService;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +25,11 @@ public class StagesConfig {
   }
 
   @Bean(name = Constants.Stages.ACCOUNTING_INC_EXP)
-  DialogStageIncomeOrExpense dialogStageIncomeExpenseChoice(AccountingService accountingService) {
-    return new DialogStageIncomeOrExpense(accountingService);
+  DialogStageIncomeOrExpense dialogStageIncomeExpenseChoice(
+      AccountingService accountingService,
+      MenuOptionsService menuOptionsService
+  ) {
+    return new DialogStageIncomeOrExpense(accountingService, menuOptionsService);
   }
 
   @Bean(name = Constants.Stages.GOOGLE_AUTH)

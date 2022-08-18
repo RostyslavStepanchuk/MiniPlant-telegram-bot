@@ -16,17 +16,22 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.common.annotations.VisibleForTesting;
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MarkupBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MarkupCleaner;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageOrCallbackAcceptable;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @RequiredArgsConstructor
-public class DialogStageMain implements DialogStage, MessageOrCallbackAcceptable {
+public class DialogStageMain implements DialogStage, MessageOrCallbackAcceptable, MarkupCleaner {
 
   private final AccountingService accountingService;
 
@@ -34,13 +39,15 @@ public class DialogStageMain implements DialogStage, MessageOrCallbackAcceptable
   public String execute(Update update, TelegramLongPollingBot bot, BotUser user)
       throws TelegramApiException {
 
+    clearAllMarkups(user, bot);
     Optional<BigDecimal> amountInput = getAmountInput(update, bot, user);
 
     if (amountInput.isPresent()) {
       AccountingRecord accountingRecord = accountingService
           .updateAccountingRecord(mapInputToAccountingRecord(amountInput.get(), user));
 
-      sendMessageForNextStage(accountingRecord, bot, user.getId());
+      Message message = sendMessageForNextStage(accountingRecord, bot, user.getId());
+      addMarkupToCleaningList(message, user);
 
       return ACCOUNTING_INC_EXP;
     }
@@ -89,16 +96,18 @@ public class DialogStageMain implements DialogStage, MessageOrCallbackAcceptable
   }
 
   @VisibleForTesting
-  protected void sendMessageForNextStage(AccountingRecord accountingRecord,
+  protected Message sendMessageForNextStage(AccountingRecord accountingRecord,
                                          TelegramLongPollingBot bot,
                                          Long chatId) throws TelegramApiException {
     String acceptanceMessage = String.format(
         AMOUNT_ACCEPTED,
         accountingRecord.getAmount());
-    bot.execute(
+    return bot.execute(
         MessageBuilder.message(chatId, acceptanceMessage)
-            .withNewRowInlineBtn(INCOME)
-            .withNewRowInlineBtn(EXPENSES)
+            .withMarkup(MarkupBuilder.get()
+                .addButtonInNewRow(INCOME)
+                .addButtonInNewRow(EXPENSES)
+                .buildInline())
             .build());
   }
 
@@ -106,10 +115,14 @@ public class DialogStageMain implements DialogStage, MessageOrCallbackAcceptable
   protected void clarifyAmount(List<String> numbersInMessage,
                                BotUser user,
                                TelegramLongPollingBot bot) throws TelegramApiException {
+    SendMessage message = MessageBuilder
+        .message(user.getId(), PLEASE_SPECIFY_AMOUNT)
+        .withMarkup(MarkupBuilder.get()
+            .hamburgerMenu(numbersInMessage)
+            .buildInline())
+        .build();
 
-    MessageBuilder message = MessageBuilder.message(user.getId(), PLEASE_SPECIFY_AMOUNT);
-    numbersInMessage.forEach(message::withNewRowInlineBtn);
-    bot.execute(message.build());
+    addMarkupToCleaningList(bot.execute(message), user);
   }
 
   @VisibleForTesting

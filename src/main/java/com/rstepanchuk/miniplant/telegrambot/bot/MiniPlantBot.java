@@ -5,6 +5,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEX
 
 import java.io.Serializable;
 import com.google.common.annotations.VisibleForTesting;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
@@ -49,11 +50,13 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       BotUser user = userFilter.authorizeUser(userId);
       dialogStageHandler.handleStage(update, user, this);
     } catch (ApplicationException e) {
+      log.error("Unexpected Application exception", e);
       exec(MessageBuilder.basicMessage(userId, e.getMessage()));
     } catch (TelegramApiException ex) {
       log.error("Unexpected Telegram exception", ex);
       exec(MessageBuilder.basicMessage(userId, TELEGRAM_EXCEPTION));
     } catch (Exception e) {
+      log.error("Unexpected exception", e);
       exec(MessageBuilder.basicMessage(userId, UNEXPECTED_ERROR));
     }
   }

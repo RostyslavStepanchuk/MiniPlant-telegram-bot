@@ -4,7 +4,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAG
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
@@ -34,11 +34,9 @@ public class DialogStageHandler {
     }
   }
 
-  private void updateUserStage(BotUser user, String nextStage) {
-    user.setStageId(nextStage);
+  private void saveUserChangesDuringStage(BotUser user) {
     userRepository.save(user);
   }
-
 
   public void handleStage(
       Update update,
@@ -48,18 +46,23 @@ public class DialogStageHandler {
     try {
       DialogStage currentStage = getStage(user.getStageId());
       String nextStage = currentStage.execute(update, bot, user);
-      updateUserStage(user, nextStage);
+      user.setStageId(nextStage);
     } catch (GoogleAuthenticationException e) {
+      log.error("Google Authentication error: ", e);
       bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
       DialogStage stage = getStage(Stages.GOOGLE_AUTH);
       stage.execute(update, bot, user);
       handleStage(update, user, bot);
     } catch (ApplicationException e) {
+      log.error("Application error: ", e);
       bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
       bot.execute(MessageBuilder.basicMessage(user.getId(), STAGE_WILL_BE_RESET));
-      updateUserStage(user, Stages.MAIN);
+      user.setStageId(Stages.MAIN);
     } catch (Exception e) {
+      log.error("Error: ", e);
       bot.execute(MessageBuilder.basicMessage(user.getId(), UNEXPECTED_ERROR));
+    } finally {
+      saveUserChangesDuringStage(user);
     }
 
   }

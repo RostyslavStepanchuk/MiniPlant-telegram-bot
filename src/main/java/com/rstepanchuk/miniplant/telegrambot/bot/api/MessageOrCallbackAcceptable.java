@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.bot.stages;
+package com.rstepanchuk.miniplant.telegrambot.bot.api;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.CANNOT_READ_UPDATE;
 

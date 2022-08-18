@@ -4,6 +4,7 @@ import static com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramT
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.CANNOT_READ_UPDATE;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageOrCallbackAcceptable;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.exception.ReadingUpdateException;
 import org.junit.jupiter.api.DisplayName;

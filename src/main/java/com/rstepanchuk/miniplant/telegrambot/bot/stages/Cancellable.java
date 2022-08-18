@@ -2,7 +2,7 @@ package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.CANCELLED_GENERAL;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

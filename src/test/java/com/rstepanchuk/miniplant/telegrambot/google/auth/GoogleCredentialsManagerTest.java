@@ -21,7 +21,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeReque
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.google.GoogleCredentialStub;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;

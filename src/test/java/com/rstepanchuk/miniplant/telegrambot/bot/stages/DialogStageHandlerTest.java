@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;

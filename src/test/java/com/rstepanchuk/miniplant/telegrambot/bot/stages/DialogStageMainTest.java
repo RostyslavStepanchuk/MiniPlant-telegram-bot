@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -23,7 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MarkupBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
@@ -41,6 +43,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -59,6 +62,18 @@ class DialogStageMainTest {
 
   private final ArgumentCaptor<SendMessage> messageCaptor =
       ArgumentCaptor.forClass(SendMessage.class);
+
+  @Test
+  @DisplayName("execute - clears markups")
+  void execute_shouldClearMarkupsFromPreviousStage() throws TelegramApiException {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    BotUser givenUser = new BotUser();
+
+    // when & then
+    subject.execute(givenUpdate, bot, givenUser);
+    verify(subject).clearAllMarkups(givenUser, bot);
+  }
 
   @Test
   @DisplayName("execute - gets input from update")
@@ -81,7 +96,7 @@ class DialogStageMainTest {
     BotUser givenUser = new BotUser();
     doReturn(Optional.of(amount))
         .when(subject).getAmountInput(givenUpdate, bot, givenUser);
-    doNothing().when(subject).sendMessageForNextStage(any(), any(), any());
+    doReturn(new Message()).when(subject).sendMessageForNextStage(any(), any(), any());
 
     // when & then
     String actual = subject.execute(givenUpdate, bot, givenUser);
@@ -115,7 +130,7 @@ class DialogStageMainTest {
         .when(subject).getAmountInput(givenUpdate, bot, givenUser);
     doReturn(incomingRecord)
         .when(subject).mapInputToAccountingRecord(amount, givenUser);
-    doNothing().when(subject).sendMessageForNextStage(any(), any(), any());
+    doReturn(new Message()).when(subject).sendMessageForNextStage(any(), any(), any());
 
     // when
     subject.execute(givenUpdate, bot, givenUser);
@@ -160,11 +175,28 @@ class DialogStageMainTest {
         .when(subject).getAmountInput(givenUpdate, bot, givenUser);
     doReturn(updatedRecord)
         .when(accountingService).updateAccountingRecord(any());
-    doNothing().when(subject).sendMessageForNextStage(any(), any(), any());
+    doReturn(new Message()).when(subject).sendMessageForNextStage(any(), any(), any());
 
     // when & then
     subject.execute(givenUpdate, bot, givenUser);
     verify(subject).sendMessageForNextStage(updatedRecord, bot, userId);
+  }
+
+  @Test
+  @DisplayName("execute - adds sent message to clearance queue")
+  void execute_shouldSaveMessageForMarkupClearance() throws TelegramApiException {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    BotUser givenUser = mock(BotUser.class);
+    Message message = mock(Message.class);
+
+    doReturn(Optional.of(BigDecimal.valueOf(1)))
+        .when(subject).getAmountInput(givenUpdate, bot, givenUser);
+    doReturn(message).when(subject).sendMessageForNextStage(any(), any(), any());
+
+    // when & then
+    subject.execute(givenUpdate, bot, givenUser);
+    verify(subject).addMarkupToCleaningList(message, givenUser);
   }
 
   @Test
@@ -225,6 +257,7 @@ class DialogStageMainTest {
     BotUser givenUser = new BotUser();
     doReturn(List.of("1", "2", "3"))
         .when(subject).extractNumbersFromText(any());
+    doNothing().when(subject).addMarkupToCleaningList(any(), any());
 
     // when & then
     Optional<BigDecimal> actual = subject.getAmountInput(givenUpdate, bot, givenUser);
@@ -275,6 +308,7 @@ class DialogStageMainTest {
     BotUser givenUser = new BotUser();
     doReturn(givenAmounts)
         .when(subject).extractNumbersFromText(any());
+    doNothing().when(subject).addMarkupToCleaningList(any(), any());
 
     // when & then
     subject.getAmountInput(givenUpdate, bot, givenUser);
@@ -308,8 +342,10 @@ class DialogStageMainTest {
 
     SendMessage expectedMessage = MessageBuilder
         .message(chatId, String.format(AMOUNT_ACCEPTED, givenAmount))
-        .withNewRowInlineBtn(INCOME)
-        .withNewRowInlineBtn(EXPENSES)
+        .withMarkup(MarkupBuilder.get()
+            .addButtonInNewRow(INCOME)
+            .addButtonInNewRow(EXPENSES)
+            .buildInline())
         .build();
 
     // when
@@ -330,9 +366,12 @@ class DialogStageMainTest {
     long userId = 1L;
     BotUser givenUser = new BotUser();
     givenUser.setId(userId);
-    MessageBuilder builder = MessageBuilder.message(userId, PLEASE_SPECIFY_AMOUNT);
-    givenNumbers.forEach(builder::withNewRowInlineBtn);
-    SendMessage expectedMessage = builder.build();
+    SendMessage expectedMessage = MessageBuilder.message(userId, PLEASE_SPECIFY_AMOUNT)
+        .withMarkup(MarkupBuilder.get()
+            .hamburgerMenu(givenNumbers)
+            .buildInline())
+        .build();
+    doNothing().when(subject).addMarkupToCleaningList(any(), any());
 
     // when
     subject.clarifyAmount(givenNumbers, givenUser, bot);
@@ -342,6 +381,24 @@ class DialogStageMainTest {
     SendMessage capturedMessage = messageCaptor.getValue();
     assertEquals(PLEASE_SPECIFY_AMOUNT, capturedMessage.getText());
     assertEquals(expectedMessage, capturedMessage);
+  }
+
+  @Test
+  @DisplayName("clarifyAmount - adds message to markup clearance queue")
+  void clarifyAmount_shouldAddMessageToMarkupClearance()
+      throws TelegramApiException {
+    // given
+    List<String> givenNumbers = List.of("1", "2", "3");
+    BotUser givenUser = mock(BotUser.class);
+    Message expectedMessage = mock(Message.class);
+    doNothing().when(subject).addMarkupToCleaningList(any(), any());
+    doReturn(expectedMessage).when(bot).execute(any(SendMessage.class));
+
+    // when
+    subject.clarifyAmount(givenNumbers, givenUser, bot);
+
+    // then
+    verify(subject).addMarkupToCleaningList(expectedMessage, givenUser);
   }
 
   @ParameterizedTest

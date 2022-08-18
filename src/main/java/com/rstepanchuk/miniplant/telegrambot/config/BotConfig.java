@@ -5,7 +5,9 @@ import com.rstepanchuk.miniplant.telegrambot.bot.MiniPlantBot;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsRepository;
+import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsService;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
+import com.rstepanchuk.miniplant.telegrambot.repository.implementation.MenuOptionsServiceImpl;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingServiceImpl;
 import org.springframework.context.ApplicationContext;
@@ -38,6 +40,11 @@ public class BotConfig {
   @Bean
   AccountingService accountingService(AccountingRecordsRepository accountingRecordsRepository) {
     return new AccountingServiceImpl(accountingRecordsRepository);
+  }
+
+  @Bean
+  MenuOptionsService menuOptionsService() {
+    return new MenuOptionsServiceImpl();
   }
 
 

@@ -48,6 +48,20 @@ class AccountingInputStageTest {
   }
 
   @Test
+  @DisplayName("execute - clears previous markups")
+  void execute_shouldClearPreviousMarkups() throws TelegramApiException {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    BotUser givenUser = new BotUser();
+
+    doCallRealMethod().when(subject).execute(givenUpdate, bot, givenUser);
+
+    // when & then
+    subject.execute(givenUpdate, bot, givenUser);
+    verify(subject).clearAllMarkups(givenUser, bot);
+  }
+
+  @Test
   @DisplayName("execute - retrieves update text")
   void execute_shouldRetrieveUpdateText() throws TelegramApiException {
     // given
@@ -142,7 +156,7 @@ class AccountingInputStageTest {
 
     // when & then
     subject.execute(givenUpdate, bot, givenUser);
-    verify(subject).sendSuccessNotification(givenUpdate, bot, updatedRecord);
+    verify(subject).sendSuccessNotification(givenUpdate, bot, givenUser, updatedRecord);
   }
 
   @Test
