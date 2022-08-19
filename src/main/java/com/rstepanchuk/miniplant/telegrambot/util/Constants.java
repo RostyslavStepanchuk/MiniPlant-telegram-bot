@@ -10,16 +10,18 @@ public class Constants {
 
     public static final String MAIN = "STAGE_MAIN";
     public static final String UNDEFINED = "STAGE_UNDEFINED";
-    public static final String ACCOUNTING_INC_EXP = "STAGE_INCOME_EXPENSE";
+    public static final String AMOUNT_INPUT = "STAGE_AMOUNT_INPUT";
+    public static final String TYPE_SELECTION = "STAGE_INCOME_EXPENSE";
     public static final String ACCOUNT_SELECTION = "STAGE_ACCOUNT_SELECTION";
+    public static final String CATEGORY_SELECTION = "STAGE_CATEGORY_SELECTION";
     public static final String GOOGLE_AUTH = "STAGE_GOOGLE_AUTH";
   }
 
   @UtilityClass
   public static class Buttons {
 
-    public static final String INCOME = "Дохід";
-    public static final String EXPENSES = "Витрата";
+    public static final String INCOME = "приход";
+    public static final String EXPENSES = "списание";
   }
 
   @UtilityClass
@@ -48,7 +50,6 @@ public class Constants {
         + "Я не винний (хочеться вірити)";
     public static final String NUMBER_INPUT_EXPECTED = "Не зрозумів. Я очікував, що ти напишеш "
         + "мені суму, щоб внести її у звітність. Давай ще раз";
-    public static final String AMOUNT_ACCEPTED = "%s грн \nЦе дохід чи витрата?";
     public static final String PLEASE_SPECIFY_AMOUNT = "Вибач, я не зрозумів, що з цього сума, "
         + "яку потрібно записати?";
     public static final String CANNOT_READ_UPDATE = "Мені такого ще ніхто не присилав, не "
@@ -58,7 +59,11 @@ public class Constants {
     public static final String RECORD_DELETED = "Ну нє - то нє. Видаляю запис:\n%s";
     public static final String CANCELLED_GENERAL = "Добре, відміняємо";
     public static final String SKIPPED_GENERAL = "Добре, пропускаємо";
-    public static final String INCOME_ACCOUNT_REQUEST = "Як отримали?";
-    public static final String EXPENSE_ACCOUNT_REQUEST = "Як сплатили?";
+    public static final String SELECT_TYPE = "Це дохід чи витрата?";
+    public static final String SELECT_INCOME_ACCOUNT = "Як отримали?";
+    public static final String SELECT_EXPENSE_ACCOUNT = "Як сплатили?";
+    public static final String SELECT_CATEGORY = "В яку категорію записати?";
+    public static final String RECORD_SAVED = "Записав в табличку:\n";
+
   }
 }

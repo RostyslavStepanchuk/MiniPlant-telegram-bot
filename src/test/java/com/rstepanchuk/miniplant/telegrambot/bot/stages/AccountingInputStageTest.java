@@ -283,4 +283,19 @@ class AccountingInputStageTest {
     // when & then
     assertEquals(Stages.MAIN, subject.performCancellation(givenUpdate, bot, givenUser));
   }
+
+  @Test
+  @DisplayName("getInput - getsInputFromUpdate")
+  void performCancellation_shouldGetInputFromUpdate() {
+    // given
+    String expected = "input";
+    Update given = TelegramTestUpdate.getBasicMessageUpdate();
+    doReturn(expected).when(subject).getData(any());
+    doCallRealMethod().when(subject).getInput(any());
+
+    // when & then
+    String actual = subject.getInput(given);
+    assertEquals(expected, actual);
+    verify(subject).getData(given);
+  }
 }

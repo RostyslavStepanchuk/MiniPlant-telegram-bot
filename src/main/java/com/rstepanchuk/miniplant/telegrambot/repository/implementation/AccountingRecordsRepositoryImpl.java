@@ -21,8 +21,9 @@ public class AccountingRecordsRepositoryImpl implements AccountingRecordsReposit
   @Override
   public AccountingRecord saveRecord(AccountingRecord accountingRecord) {
     if (recordIsComplete(accountingRecord)) {
+      AccountingRecord saved = sheets.save(accountingRecord);
       jpa.deleteById(accountingRecord.getId());
-      return sheets.save(accountingRecord);
+      return saved;
     }
     AccountingRecordEntity accountingRecordEntity =
         mapper.toAccountingRecordEntity(accountingRecord);

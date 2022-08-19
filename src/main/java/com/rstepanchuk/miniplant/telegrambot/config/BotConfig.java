@@ -5,9 +5,9 @@ import com.rstepanchuk.miniplant.telegrambot.bot.MiniPlantBot;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsRepository;
-import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsService;
+import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsRepository;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
-import com.rstepanchuk.miniplant.telegrambot.repository.implementation.MenuOptionsServiceImpl;
+import com.rstepanchuk.miniplant.telegrambot.repository.implementation.MenuOptionsRepositoryImpl;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingServiceImpl;
 import org.springframework.context.ApplicationContext;
@@ -43,8 +43,8 @@ public class BotConfig {
   }
 
   @Bean
-  MenuOptionsService menuOptionsService() {
-    return new MenuOptionsServiceImpl();
+  MenuOptionsRepository menuOptionsRepository() {
+    return new MenuOptionsRepositoryImpl();
   }
 
 

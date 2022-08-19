@@ -3,7 +3,7 @@ package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 import static com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUser.DEFAULT_USER_ID;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_WILL_BE_RESET;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.ACCOUNTING_INC_EXP;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.TYPE_SELECTION;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.MAIN;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.UNDEFINED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,11 +97,11 @@ class DialogStageHandlerTest {
     BotUser user = getTestBotUser();
 
     when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
-    doReturn(ACCOUNTING_INC_EXP).when(dialogStage).execute(any(), any(), eq(user));
+    doReturn(TYPE_SELECTION).when(dialogStage).execute(any(), any(), eq(user));
 
     subject.handleStage(update, user, bot);
 
-    assertEquals(ACCOUNTING_INC_EXP, user.getStageId());
+    assertEquals(TYPE_SELECTION, user.getStageId());
     verify(userRepository).save(user);
   }
 

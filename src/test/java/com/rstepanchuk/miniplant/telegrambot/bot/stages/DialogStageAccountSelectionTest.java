@@ -33,11 +33,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @ExtendWith(MockitoExtension.class)
-class DialogStageIncomeOrExpenseTest {
+class DialogStageAccountSelectionTest {
 
   @Spy
   @InjectMocks
-  private DialogStageIncomeOrExpense subject;
+  private DialogStageAccountSelection subject;
 
   @Mock
   private AccountingService accountingService;
@@ -48,24 +48,16 @@ class DialogStageIncomeOrExpenseTest {
   @Test
   @DisplayName("mapInputTextToAccountingRecord - sets input as type")
   void mapInputTextToAccountingRecord_shouldSetInputAsRecordType() {
-    // given
-    String input = "income";
-    BotUser givenUser = new BotUser();
-
-    // when & then
-    AccountingRecord actual = subject.mapInputTextToAccountingRecord(input, givenUser);
-    assertEquals(input, actual.getType());
+    String input = "account";
+    AccountingRecord actual = subject.mapInputTextToAccountingRecord(input, null);
+    assertEquals(input, actual.getAccount());
   }
 
   @Test
   @DisplayName("mapInputTextToAccountingRecord - saves user to record")
   void mapInputTextToAccountingRecord_shouldSaveUserToRecord() {
-    // given
-    String input = "income";
     BotUser givenUser = mock(BotUser.class);
-
-    // when & then
-    AccountingRecord actual = subject.mapInputTextToAccountingRecord(input, givenUser);
+    AccountingRecord actual = subject.mapInputTextToAccountingRecord(null, givenUser);
     assertEquals(givenUser, actual.getUser());
   }
 
@@ -83,6 +75,7 @@ class DialogStageIncomeOrExpenseTest {
     botUser.setId(DEFAULT_USER_ID);
 
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
+    doReturn("приход").when(accountingRecord).getType();
     doReturn(menuOptions).when(menuOptionsService).getOptionsByMenuName(any());
     doReturn(messageText).when(subject).getNextStageComingNotification(any());
     doNothing().when(subject).addMarkupToCleaningList(any(), any());
@@ -98,7 +91,7 @@ class DialogStageIncomeOrExpenseTest {
     // then
     verify(bot).execute(messageCaptor.capture());
     verify(subject).getNextStageComingNotification(accountingRecord);
-    verify(menuOptionsService).getOptionsByMenuName(nextStage);
+    verify(menuOptionsService).getOptionsByMenuName(nextStage + "-" + "приход");
     SendMessage actualMessage = messageCaptor.getValue();
     assertEquals(String.valueOf(DEFAULT_USER_ID), actualMessage.getChatId());
     assertEquals(messageText, actualMessage.getText());
@@ -125,30 +118,16 @@ class DialogStageIncomeOrExpenseTest {
   @Test
   @DisplayName("getNextStage - returns account selection stage")
   void getNextStage_shouldReturnAccountSelectionStage() {
-    assertEquals(Stages.ACCOUNT_SELECTION, subject.getNextStage());
+    assertEquals(Stages.CATEGORY_SELECTION, subject.getNextStage());
   }
 
   @Test
   @DisplayName("getNextStageComingNotification - returns valid message for income")
   void getNextStageComingNotification_shouldReturnIncomeRequestIfIncome() {
     AccountingRecord givenRecord = mock(AccountingRecord.class);
-    doReturn(true).when(givenRecord).isIncome();
-    doReturn("{record}").when(givenRecord).getType();
+    doReturn("{account}").when(givenRecord).getAccount();
 
-    String expected = "{record}\n" + Messages.SELECT_INCOME_ACCOUNT;
-
-    assertEquals(expected,
-        subject.getNextStageComingNotification(givenRecord));
-  }
-
-  @Test
-  @DisplayName("getNextStageComingNotification - returns valid message for expense")
-  void getNextStageComingNotification_shouldReturnExpenseRequestIfNotIncome() {
-    AccountingRecord givenRecord = mock(AccountingRecord.class);
-    doReturn(false).when(givenRecord).isIncome();
-    doReturn("{record}").when(givenRecord).getType();
-
-    String expected = "{record}\n" + Messages.SELECT_EXPENSE_ACCOUNT;
+    String expected = "{account}\n" + Messages.SELECT_CATEGORY;
 
     assertEquals(expected,
         subject.getNextStageComingNotification(givenRecord));

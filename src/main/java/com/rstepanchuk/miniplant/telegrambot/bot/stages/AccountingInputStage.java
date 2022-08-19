@@ -5,6 +5,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.RECO
 
 import com.rstepanchuk.miniplant.telegrambot.bot.api.MarkupCleaner;
 import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageOrCallbackAcceptable;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
@@ -19,7 +20,8 @@ public abstract class AccountingInputStage implements
     DialogStage,
     Cancellable,
     Skippable,
-    MarkupCleaner {
+    MarkupCleaner,
+    MessageOrCallbackAcceptable {
 
   protected final AccountingService accountingService;
 
@@ -61,7 +63,9 @@ public abstract class AccountingInputStage implements
     return Stages.MAIN;
   }
 
-  protected abstract String getInput(Update update);
+  protected String getInput(Update update) {
+    return getData(update);
+  }
 
   protected abstract AccountingRecord mapInputTextToAccountingRecord(String input, BotUser user);
 

@@ -21,8 +21,10 @@ import com.rstepanchuk.miniplant.telegrambot.repository.mapper.AccountingRecordM
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -63,7 +65,10 @@ class AccountingRecordsRepositoryImplTest {
     doReturn(true).when(subject).recordIsComplete(any());
     // when & then
     subject.saveRecord(givenRecord);
-    verify(jpa).deleteById(givenRecordId);
+
+    InOrder inOrder = Mockito.inOrder(jpa, sheets);
+    inOrder.verify(sheets).save(any());
+    inOrder.verify(jpa).deleteById(givenRecordId);
     verifyNoMoreInteractions(jpa);
   }
 
