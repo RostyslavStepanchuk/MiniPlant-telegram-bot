@@ -15,6 +15,8 @@ public class Constants {
     public static final String ACCOUNT_SELECTION = "STAGE_ACCOUNT_SELECTION";
     public static final String CATEGORY_SELECTION = "STAGE_CATEGORY_SELECTION";
     public static final String GOOGLE_AUTH = "STAGE_GOOGLE_AUTH";
+    public static final String SHEET_ID_SETUP = "STAGE_SHEET_ID_SETUP";
+    public static final String SHEET_PAGE_SETUP = "STAGE_SHEET_PAGE_SETUP";
   }
 
   @UtilityClass
@@ -44,8 +46,8 @@ public class Constants {
         + "табличках";
     public static final String FOLLOW_AUTH_URL = "Будь ласка, пройди за "
         + "посиланням і передай Google, що я від тебе";
-    public static final String SHEETS_NOT_SET_UP = "Я не можу знайти у себе, в яку табличку це "
-        + "записувати :(";
+    public static final String CANT_SAVE_SHEETS_NOT_CONFIGURED = "Я не можу зберегти запис - не "
+        + "знаю, в яку табличку записувати. Давай налаштуємо і спробуємо ще раз";
     public static final String CANT_APPEND_ROW = "Не виходить вставити рядок в Google Sheets. "
         + "Я не винний (хочеться вірити)";
     public static final String NUMBER_INPUT_EXPECTED = "Не зрозумів. Я очікував, що ти напишеш "
@@ -64,6 +66,10 @@ public class Constants {
     public static final String SELECT_EXPENSE_ACCOUNT = "Як сплатили?";
     public static final String SELECT_CATEGORY = "В яку категорію записати?";
     public static final String RECORD_SAVED = "Записав в табличку:\n";
+    public static final String PROVIDE_SHEETS_ID = "Відправ мені ID своєї google-таблички, "
+        + "в яку ведуться записи. "
+        + "Ти можеш знайти його, якщо зайдеш до таблиці, і подивишся у web-адресі:\n"
+        + "docs.google.com/spreadsheets/d/{ОЦЕ ID}/edit#gid=0";
 
   }
 }

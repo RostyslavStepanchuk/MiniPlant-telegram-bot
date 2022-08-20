@@ -22,7 +22,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpda
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
-import com.rstepanchuk.miniplant.telegrambot.repository.implementation.UserRepositoryImpl;
+import com.rstepanchuk.miniplant.telegrambot.repository.UserRepositoryImpl;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

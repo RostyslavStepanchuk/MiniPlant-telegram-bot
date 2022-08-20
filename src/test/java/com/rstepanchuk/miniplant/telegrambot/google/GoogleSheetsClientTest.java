@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleApiException;
-import com.rstepanchuk.miniplant.telegrambot.repository.entity.SheetPageEntity;
+import com.rstepanchuk.miniplant.telegrambot.model.SheetsTableCredentials;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +66,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - uses appends class")
   void appendRow_shouldBuildChainUpToAppendClass() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     ArrayList<Object> values = new ArrayList<>();
 
     mockSpreadsheetsChain();
@@ -83,7 +84,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - appends sheetsId from credentials")
   void appendRow_shouldAppendSheetIdFromCredentials() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     credentials.setSheetId(SHEET_ID);
     ArrayList<Object> givenValues = new ArrayList<>();
 
@@ -100,17 +101,19 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - appends valid page range")
   void appendRow_shouldAppendPageRangeFromCredentials() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = mock(SheetsTableCredentials.class);
     credentials.setPageName(PAGE_NAME);
     credentials.setRange(RANGE);
     ArrayList<Object> givenValues = new ArrayList<>();
 
     mockSpreadsheetsChain();
+    doReturn(FULL_RANGE).when(credentials).getTableFullAddress();
 
     // when
     subject.appendRow(credentials, givenValues);
 
     // then
+    verify(credentials).getTableFullAddress();
     verify(values).append(any(), eq(FULL_RANGE), any());
   }
 
@@ -118,7 +121,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - appends values")
   void appendRow_shouldAppendValues() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     List<Object> givenValues = List.of("Test_value");
     ValueRange expectedRange = new ValueRange();
     expectedRange.setValues(List.of(givenValues));
@@ -136,7 +139,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - sets RAW value input option")
   void appendRow_shouldSetRawValueInputOption() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     List<Object> givenValues = List.of("Test_value");
 
     mockSpreadsheetsChain();
@@ -152,7 +155,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - executes call to sheets")
   void appendRow_executesCallToSheets() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     List<Object> givenValues = List.of("Test_value");
 
     mockSpreadsheetsChain();
@@ -169,7 +172,7 @@ class GoogleSheetsClientTest {
   @DisplayName("appendRow - throws Google Api Exception")
   void appendRow_whenExceptionThrown_shouldThrowGoogleApiException() throws IOException {
     // given
-    SheetPageEntity credentials = new SheetPageEntity();
+    SheetsTableCredentials credentials = new SheetsTableCredentials();
     List<Object> givenValues = List.of("Test_value");
     doThrow(IOException.class).when(append).execute();
 

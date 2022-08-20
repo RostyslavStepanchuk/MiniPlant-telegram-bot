@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

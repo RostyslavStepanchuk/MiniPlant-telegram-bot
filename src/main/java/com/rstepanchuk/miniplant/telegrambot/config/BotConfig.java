@@ -7,7 +7,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsRepository;
 import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsRepository;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
-import com.rstepanchuk.miniplant.telegrambot.repository.implementation.MenuOptionsRepositoryImpl;
+import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsRepositoryImpl;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingServiceImpl;
 import org.springframework.context.ApplicationContext;

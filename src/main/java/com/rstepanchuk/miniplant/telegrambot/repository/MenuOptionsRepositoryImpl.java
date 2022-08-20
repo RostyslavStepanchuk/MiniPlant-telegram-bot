@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;
@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsRepository;
 
 // TODO: replace stub with real service
 public class MenuOptionsRepositoryImpl implements MenuOptionsRepository {

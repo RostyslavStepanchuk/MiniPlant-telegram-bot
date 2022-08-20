@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.dao;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,8 +14,8 @@ import com.rstepanchuk.miniplant.telegrambot.exception.SheetsNotSetUpException;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleServiceFactory;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleSheetsClient;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
+import com.rstepanchuk.miniplant.telegrambot.model.SheetsTableCredentials;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
-import com.rstepanchuk.miniplant.telegrambot.repository.entity.SheetPageEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,17 +25,17 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AccountingRecordsGoogleSheetsTest {
+class AccountingRecordsGoogleSheetsRepoTest {
 
   @Spy
   @InjectMocks
-  private AccountingRecordsGoogleSheets subject;
+  private AccountingRecordsGoogleSheetsRepo subject;
 
   @Mock
   private GoogleServiceFactory googleServiceFactory;
 
   @Mock
-  private SheetsPageDao sheetsPageDao;
+  private SheetsTableCredentialsRepositoryImpl tableCredentialsRepository;
 
   @Test
   @DisplayName("save - finds Sheets table by User ID")
@@ -46,16 +46,16 @@ class AccountingRecordsGoogleSheetsTest {
     BotUser givenUser = new BotUser();
     givenUser.setId(givenUserId);
     given.setUser(givenUser);
-    doReturn(Optional.of(new SheetPageEntity()))
-        .when(sheetsPageDao).findByUserIdEquals(givenUserId);
+    doReturn(Optional.of(new SheetsTableCredentials()))
+        .when(tableCredentialsRepository).findByUserId(givenUserId);
     doReturn(mock(GoogleSheetsClient.class))
         .when(googleServiceFactory).getSheetsService(givenUserId);
     doReturn(null)
         .when(subject).toSheetsRow(given);
-    // when
-    subject.save(given);
-    // then
-    verify(sheetsPageDao).findByUserIdEquals(givenUserId);
+
+    // when & then
+    subject.saveRecord(given);
+    verify(tableCredentialsRepository).findByUserId(givenUserId);
   }
 
   @Test
@@ -69,7 +69,7 @@ class AccountingRecordsGoogleSheetsTest {
     given.setUser(givenUser);
 
     // when & then
-    assertThrows(SheetsNotSetUpException.class, () -> subject.save(given));
+    assertThrows(SheetsNotSetUpException.class, () -> subject.saveRecord(given));
   }
 
   @Test
@@ -81,15 +81,15 @@ class AccountingRecordsGoogleSheetsTest {
     BotUser givenUser = new BotUser();
     givenUser.setId(givenUserId);
     given.setUser(givenUser);
-    doReturn(Optional.of(new SheetPageEntity()))
-        .when(sheetsPageDao).findByUserIdEquals(givenUserId);
+    doReturn(Optional.of(new SheetsTableCredentials()))
+        .when(tableCredentialsRepository).findByUserId(givenUserId);
     doReturn(mock(GoogleSheetsClient.class))
         .when(googleServiceFactory).getSheetsService(givenUserId);
     doReturn(null)
         .when(subject).toSheetsRow(given);
 
     // when
-    subject.save(given);
+    subject.saveRecord(given);
     // then
     verify(googleServiceFactory).getSheetsService(givenUserId);
   }
@@ -105,17 +105,17 @@ class AccountingRecordsGoogleSheetsTest {
     given.setUser(givenUser);
     List<Object> rowDataMock = List.of("testValue");
     GoogleSheetsClient sheetsServiceMock = mock(GoogleSheetsClient.class);
-    SheetPageEntity sheetPageEntity = new SheetPageEntity();
+    SheetsTableCredentials sheetPageEntity = new SheetsTableCredentials();
 
     doReturn(Optional.of(sheetPageEntity))
-        .when(sheetsPageDao).findByUserIdEquals(givenUserId);
+        .when(tableCredentialsRepository).findByUserId(givenUserId);
     doReturn(sheetsServiceMock)
         .when(googleServiceFactory).getSheetsService(givenUserId);
     doReturn(rowDataMock)
         .when(subject).toSheetsRow(given);
 
     // when
-    AccountingRecord actual = subject.save(given);
+    AccountingRecord actual = subject.saveRecord(given);
     // then
     assertEquals(given, actual);
     verify(sheetsServiceMock).appendRow(sheetPageEntity, rowDataMock);
@@ -141,7 +141,7 @@ class AccountingRecordsGoogleSheetsTest {
     assertEquals(String.class, actualString.getClass());
     LocalDate actualDate = LocalDate.parse(
         String.valueOf(actualString),
-        AccountingRecordsGoogleSheets.SHEETS_DATE_FORMAT);
+        AccountingRecordsGoogleSheetsRepo.SHEETS_DATE_FORMAT);
     assertEquals(LocalDate.now(), actualDate);
   }
 
@@ -200,7 +200,5 @@ class AccountingRecordsGoogleSheetsTest {
     doReturn(null).when(basicRecord).getCategory();
     assertThrows(NullPointerException.class, () -> subject.toSheetsRow(basicRecord));
   }
-
-
 
 }
