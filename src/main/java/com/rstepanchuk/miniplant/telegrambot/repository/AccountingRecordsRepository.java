@@ -9,4 +9,5 @@ public interface AccountingRecordsRepository {
 
   AccountingRecord saveRecord(AccountingRecord accountingRecord);
 
+  void deleteRecord(AccountingRecord accountingRecord);
 }

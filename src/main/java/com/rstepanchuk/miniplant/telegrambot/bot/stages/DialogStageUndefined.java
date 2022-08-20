@@ -2,7 +2,7 @@ package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_UNKNOWN;
 
-import com.rstepanchuk.miniplant.telegrambot.bot.MessageBuilder;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,7 +15,7 @@ public class DialogStageUndefined implements DialogStage {
   public String execute(Update update, TelegramLongPollingBot bot, BotUser user)
       throws TelegramApiException {
     bot.execute(
-        MessageBuilder.basicMessage(update, STAGE_UNKNOWN)
+        MessageBuilder.basicMessage(user.getId(), STAGE_UNKNOWN)
     );
     return Constants.Stages.MAIN;
   }

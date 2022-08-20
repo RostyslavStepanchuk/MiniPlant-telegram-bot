@@ -112,9 +112,12 @@ class AccountingServiceImplTest {
     BotUser givenUser = new BotUser();
     AccountingRecord given = new AccountingRecord();
     given.setUser(givenUser);
+    AccountingRecord currentRecord = mock(AccountingRecord.class);
     AccountingRecord updatedRecord = mock(AccountingRecord.class);
-    doReturn(updatedRecord)
+
+    doReturn(currentRecord)
         .when(accountingRecordsRepository).getCurrentRecord(givenUser);
+    doReturn(updatedRecord).when(currentRecord).merge(given);
     doReturn(updatedRecord)
         .when(accountingRecordsRepository).saveRecord(any());
 
@@ -125,6 +128,84 @@ class AccountingServiceImplTest {
     verify(accountingRecordsRepository).saveRecord(updatedRecord);
     assertEquals(updatedRecord, actual);
   }
+
+
+  @Test
+  @DisplayName("deleteCurrentRecord - gets current record from repo")
+  void deleteCurrentRecord_shouldGetCurrentRecordFromRepository() {
+    BotUser given = new BotUser();
+    subject.deleteCurrentRecord(given);
+    verify(accountingRecordsRepository).getCurrentRecord(given);
+  }
+
+  @Test
+  @DisplayName("deleteCurrentRecord - deletes record")
+  void deleteCurrentRecord_shouldDeleteRecord() {
+    // given
+    BotUser given = new BotUser();
+    AccountingRecord accountingRecord = mock(AccountingRecord.class);
+
+    doReturn(accountingRecord).when(accountingRecordsRepository).getCurrentRecord(any());
+
+    // when & then
+    subject.deleteCurrentRecord(given);
+    verify(accountingRecordsRepository).deleteRecord(accountingRecord);
+  }
+
+  @Test
+  @DisplayName("deleteCurrentRecord - returns deleted record")
+  void deleteCurrentRecord_shouldReturnDeletedRecord() {
+    // given
+    BotUser given = new BotUser();
+    AccountingRecord accountingRecord = mock(AccountingRecord.class);
+
+    doReturn(accountingRecord).when(accountingRecordsRepository).getCurrentRecord(any());
+
+    // when & then
+    assertEquals(accountingRecord, subject.deleteCurrentRecord(given));
+  }
+
+  @Test
+  @DisplayName("finishCurrentRecord - gets current record from repo")
+  void finishCurrentRecord_shouldGetCurrentRecordFromRepository() {
+    BotUser given = new BotUser();
+    doReturn(new AccountingRecord()).when(accountingRecordsRepository).getCurrentRecord(any());
+    subject.finishCurrentRecord(given);
+    verify(accountingRecordsRepository).getCurrentRecord(given);
+  }
+
+  @Test
+  @DisplayName("finishCurrentRecord - closes fields of current record")
+  void finishCurrentRecord_shouldCloseFieldsOfCurrentRecord() {
+    // given
+    BotUser given = new BotUser();
+    AccountingRecord accountingRecord = mock(AccountingRecord.class);
+
+    doReturn(accountingRecord).when(accountingRecordsRepository).getCurrentRecord(any());
+
+    // when & then
+    subject.finishCurrentRecord(given);
+    verify(accountingRecord).closeEmptyFields();
+  }
+
+  @Test
+  @DisplayName("finishCurrentRecord - saves closed record")
+  void finishCurrentRecord_shouldSaveClosedRecord() {
+    // given
+    BotUser given = new BotUser();
+    AccountingRecord accountingRecord = mock(AccountingRecord.class);
+    AccountingRecord closedRecord = mock(AccountingRecord.class);
+
+    doReturn(accountingRecord).when(accountingRecordsRepository).getCurrentRecord(any());
+    doReturn(closedRecord).when(accountingRecord).closeEmptyFields();
+    doReturn(closedRecord).when(accountingRecordsRepository).saveRecord(any());
+
+    // when & then
+    AccountingRecord actual = subject.finishCurrentRecord(given);
+    verify(accountingRecordsRepository).saveRecord(closedRecord);
+    assertEquals(closedRecord, actual);
+  }
+
 
 
 }

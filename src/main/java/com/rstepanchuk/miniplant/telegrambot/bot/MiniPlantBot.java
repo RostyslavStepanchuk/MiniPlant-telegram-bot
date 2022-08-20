@@ -4,6 +4,8 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.TELE
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
 
 import java.io.Serializable;
+import com.google.common.annotations.VisibleForTesting;
+import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageHandler;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
@@ -19,7 +21,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Slf4j
 public class MiniPlantBot extends TelegramLongPollingBot {
 
-  private final MessageValidator messageValidator;
+  private final UserFilter userFilter;
   private final DialogStageHandler dialogStageHandler;
 
   @Value("${bot.name}")
@@ -38,18 +40,24 @@ public class MiniPlantBot extends TelegramLongPollingBot {
   }
 
   public void onUpdateReceived(Update update) {
+    userFilter.getUserId(update)
+        .ifPresent(id -> processUpdate(id, update));
+  }
+
+  @VisibleForTesting
+  protected void processUpdate(Long userId, Update update) {
     try {
-      if (update.hasMessage()) {
-        BotUser user = messageValidator.validateMessage(update.getMessage());
-        dialogStageHandler.handleStage(update, user, this);
-      }
+      BotUser user = userFilter.authorizeUser(userId);
+      dialogStageHandler.handleStage(update, user, this);
     } catch (ApplicationException e) {
-      exec(MessageBuilder.basicMessage(update, e.getMessage()));
+      log.error("Unexpected Application exception", e);
+      exec(MessageBuilder.basicMessage(userId, e.getMessage()));
     } catch (TelegramApiException ex) {
       log.error("Unexpected Telegram exception", ex);
-      exec(MessageBuilder.basicMessage(update, TELEGRAM_EXCEPTION));
+      exec(MessageBuilder.basicMessage(userId, TELEGRAM_EXCEPTION));
     } catch (Exception e) {
-      exec(MessageBuilder.basicMessage(update, UNEXPECTED_ERROR));
+      log.error("Unexpected exception", e);
+      exec(MessageBuilder.basicMessage(userId, UNEXPECTED_ERROR));
     }
   }
 
@@ -60,20 +68,4 @@ public class MiniPlantBot extends TelegramLongPollingBot {
       log.error("Unexpected Telegram exception", e);
     }
   }
-
-  //  private static ReplyKeyboardMarkup getSettingsKeyboard() {
-  //    ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-  //    replyKeyboardMarkup.setSelective(true);
-  //    replyKeyboardMarkup.setResizeKeyboard(true);
-  //    replyKeyboardMarkup.setOneTimeKeyboard(true);
-  //
-  //    List<KeyboardRow> keyboard = new ArrayList<>();
-  //    KeyboardRow keyboardFirstRow = new KeyboardRow();
-  //    keyboardFirstRow.add(INCOME);
-  //    keyboardFirstRow.add(EXPENSES);
-  //    keyboard.add(keyboardFirstRow);
-  //    replyKeyboardMarkup.setKeyboard(keyboard);
-  //
-  //    return replyKeyboardMarkup;
-  //  }
 }

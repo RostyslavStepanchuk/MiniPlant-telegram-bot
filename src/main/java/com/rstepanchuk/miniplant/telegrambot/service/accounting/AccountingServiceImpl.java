@@ -1,6 +1,6 @@
 package com.rstepanchuk.miniplant.telegrambot.service.accounting;
 
-import java.util.Optional;
+import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
 import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +12,24 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public AccountingRecord updateAccountingRecord(AccountingRecord incomingRecord) {
-    AccountingRecord currentRecord = recordsRepository.getCurrentRecord(incomingRecord.getUser());
-    Optional.ofNullable(incomingRecord.getAmount()).ifPresent(currentRecord::setAmount);
-    Optional.ofNullable(incomingRecord.getCategory()).ifPresent(currentRecord::setCategory);
-    Optional.ofNullable(incomingRecord.getType()).ifPresent(currentRecord::setType);
-    Optional.ofNullable(incomingRecord.getAccount()).ifPresent(currentRecord::setAccount);
-    return recordsRepository.saveRecord(currentRecord);
+    AccountingRecord updated = recordsRepository
+        .getCurrentRecord(incomingRecord.getUser())
+        .merge(incomingRecord);
+    return recordsRepository.saveRecord(updated);
+  }
+
+  @Override
+  public AccountingRecord deleteCurrentRecord(BotUser user) {
+    AccountingRecord currentRecord = recordsRepository.getCurrentRecord(user);
+    recordsRepository.deleteRecord(currentRecord);
+    return currentRecord;
+  }
+
+  @Override
+  public AccountingRecord finishCurrentRecord(BotUser user) {
+    AccountingRecord currentRecord =
+        recordsRepository.getCurrentRecord(user);
+    return recordsRepository.saveRecord(currentRecord.closeEmptyFields());
   }
 
 }

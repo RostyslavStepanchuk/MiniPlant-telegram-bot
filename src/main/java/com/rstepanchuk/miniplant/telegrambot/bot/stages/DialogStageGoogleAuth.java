@@ -16,7 +16,7 @@ public class DialogStageGoogleAuth implements DialogStage {
   @Override
   public String execute(Update update, TelegramLongPollingBot bot, BotUser user)
       throws TelegramApiException {
-    credentialsManager.authorize(bot, update);
+    credentialsManager.authorize(bot, user);
     return Constants.Stages.MAIN;
   }
 }
