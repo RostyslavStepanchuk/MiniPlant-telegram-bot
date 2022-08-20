@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "sheets_pages")
-public class SheetPageEntity {
+public class SheetsTableCredentialsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,7 +11,7 @@ import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.exception.UserNotAllowedException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
-import com.rstepanchuk.miniplant.telegrambot.repository.implementation.UserRepositoryImpl;
+import com.rstepanchuk.miniplant.telegrambot.repository.UserRepositoryImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

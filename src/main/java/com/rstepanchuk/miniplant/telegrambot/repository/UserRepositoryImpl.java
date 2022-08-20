@@ -1,8 +1,7 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
-import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import com.rstepanchuk.miniplant.telegrambot.repository.dao.UserDao;
 import com.rstepanchuk.miniplant.telegrambot.repository.entity.BotUserEntity;
 import com.rstepanchuk.miniplant.telegrambot.repository.mapper.UserMapper;

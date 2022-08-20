@@ -1,12 +1,10 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import java.util.Objects;
 import com.google.common.annotations.VisibleForTesting;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
-import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsRepository;
-import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsGoogleSheets;
-import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsJpa;
+import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsDao;
 import com.rstepanchuk.miniplant.telegrambot.repository.entity.AccountingRecordEntity;
 import com.rstepanchuk.miniplant.telegrambot.repository.mapper.AccountingRecordMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,20 +12,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccountingRecordsRepositoryImpl implements AccountingRecordsRepository {
 
-  private final AccountingRecordsJpa jpa;
-  private final AccountingRecordsGoogleSheets sheets;
+  private final AccountingRecordsDao jpa;
+  private final AccountingRecordsGoogleSheetsRepo googleSheets;
   private final AccountingRecordMapper mapper;
 
   @Override
   public AccountingRecord saveRecord(AccountingRecord accountingRecord) {
     if (recordIsComplete(accountingRecord)) {
-      AccountingRecord saved = sheets.save(accountingRecord);
+      AccountingRecord savedRecord =
+          googleSheets.saveRecord(accountingRecord);
       jpa.deleteById(accountingRecord.getId());
-      return saved;
+      return savedRecord;
     }
-    AccountingRecordEntity accountingRecordEntity =
-        mapper.toAccountingRecordEntity(accountingRecord);
-    jpa.save(accountingRecordEntity);
+    AccountingRecordEntity recordEntity = mapper.toAccountingRecordEntity(accountingRecord);
+    jpa.save(recordEntity);
     return accountingRecord;
   }
 
