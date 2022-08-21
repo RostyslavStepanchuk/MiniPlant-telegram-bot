@@ -14,7 +14,6 @@ import com.rstepanchuk.miniplant.telegrambot.google.GoogleServiceFactory;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleAuthorizationUtils;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
 import com.rstepanchuk.miniplant.telegrambot.repository.AccountingRecordsGoogleSheetsRepo;
-import com.rstepanchuk.miniplant.telegrambot.repository.SheetsTableCredentialsRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,9 +59,8 @@ public class GoogleConfig {
 
   @Bean("GoogleSheetsAccounting")
   AccountingRecordsGoogleSheetsRepo accRecordsGoogleSheetsRepo(
-      GoogleServiceFactory factory,
-      SheetsTableCredentialsRepositoryImpl credsRepo) {
-    return new AccountingRecordsGoogleSheetsRepo(factory, credsRepo);
+      GoogleServiceFactory factory) {
+    return new AccountingRecordsGoogleSheetsRepo(factory);
   }
 
 }

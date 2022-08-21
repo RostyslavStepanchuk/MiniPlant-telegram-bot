@@ -3,15 +3,15 @@ package com.rstepanchuk.miniplant.telegrambot.bot.stages;
 import static com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUser.DEFAULT_USER_ID;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.STAGE_WILL_BE_RESET;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Messages.UNEXPECTED_ERROR;
-import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.TYPE_SELECTION;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.MAIN;
+import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.TYPE_SELECTION;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages.UNDEFINED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +21,7 @@ import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.bot.util.testinput.TelegramTestUpdate;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
+import com.rstepanchuk.miniplant.telegrambot.exception.SheetsNotSetUpException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepositoryImpl;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
@@ -56,7 +57,16 @@ class DialogStageHandlerTest {
   private ApplicationContext context;
 
   @Mock
-  private DialogStage dialogStage;
+  private DialogStage stageMock;
+
+  @Mock
+  private DialogStageUndefined undefinedStage;
+
+  @Mock
+  private DialogStageGoogleAuth googleAuthStage;
+
+  @Mock
+  private DialogStageSheetsConfig sheetsConfigStage;
 
   @Mock
   private TelegramLongPollingBot bot;
@@ -68,12 +78,12 @@ class DialogStageHandlerTest {
     Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
-    when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
+    when(context.getBean(MAIN, DialogStage.class)).thenReturn(stageMock);
 
     subject.handleStage(update, user, bot);
 
     verify(context).getBean(MAIN, DialogStage.class);
-    verify(dialogStage).execute(update, bot, user);
+    verify(stageMock).execute(update, bot, user);
   }
 
   @Test
@@ -87,7 +97,7 @@ class DialogStageHandlerTest {
 
     subject.handleStage(update, user, bot);
 
-    verify(dialogStage).execute(update, bot, user);
+    verify(undefinedStage).execute(update, bot, user);
   }
 
   @Test
@@ -96,8 +106,8 @@ class DialogStageHandlerTest {
     Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
-    when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
-    doReturn(TYPE_SELECTION).when(dialogStage).execute(any(), any(), eq(user));
+    when(context.getBean(MAIN, DialogStage.class)).thenReturn(stageMock);
+    doReturn(TYPE_SELECTION).when(stageMock).execute(any(), any(), eq(user));
 
     subject.handleStage(update, user, bot);
 
@@ -112,9 +122,9 @@ class DialogStageHandlerTest {
     BotUser user = getTestBotUser();
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
-    when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
+    when(context.getBean(MAIN, DialogStage.class)).thenReturn(stageMock);
     doThrow(new ApplicationException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot, user);
+        .when(stageMock).execute(update, bot, user);
 
     subject.handleStage(update, user, bot);
 
@@ -132,9 +142,9 @@ class DialogStageHandlerTest {
     BotUser user = getTestBotUser();
     user.setStageId(UNDEFINED);
 
-    when(context.getBean(UNDEFINED, DialogStage.class)).thenReturn(dialogStage);
+    when(context.getBean(UNDEFINED, DialogStage.class)).thenReturn(stageMock);
     doThrow(new ApplicationException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot, user);
+        .when(stageMock).execute(update, bot, user);
 
     subject.handleStage(update, user, bot);
 
@@ -148,9 +158,9 @@ class DialogStageHandlerTest {
     Update update = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser user = getTestBotUser();
 
-    when(context.getBean(MAIN, DialogStage.class)).thenReturn(dialogStage);
+    when(context.getBean(MAIN, DialogStage.class)).thenReturn(stageMock);
     doThrow(new RuntimeException(EXCEPTION_TEST_MSG))
-        .when(dialogStage).execute(update, bot, user);
+        .when(stageMock).execute(update, bot, user);
     ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
 
     subject.handleStage(update, user, bot);
@@ -171,13 +181,11 @@ class DialogStageHandlerTest {
 
     GoogleAuthenticationException authException =
         new GoogleAuthenticationException(exceptionMessage);
-    when(dialogStage.execute(givenUpdate, bot, givenUser))
+    when(stageMock.execute(givenUpdate, bot, givenUser))
         .thenThrow(authException)
         .thenReturn(null);
 
-    DialogStage authStageMock = mock(DialogStage.class);
-    doReturn(dialogStage).when(context).getBean(Stages.MAIN, DialogStage.class);
-    doReturn(authStageMock).when(context).getBean(Stages.GOOGLE_AUTH, DialogStage.class);
+    doReturn(stageMock).when(context).getBean(Stages.MAIN, DialogStage.class);
 
     // when
     subject.handleStage(givenUpdate, givenUser, bot);
@@ -194,20 +202,17 @@ class DialogStageHandlerTest {
     Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser givenUser = getTestBotUser();
 
-    when(dialogStage.execute(givenUpdate, bot, givenUser))
+    when(stageMock.execute(givenUpdate, bot, givenUser))
         .thenThrow(new GoogleAuthenticationException("testMessage"))
         .thenReturn(null);
 
-    DialogStage authStageMock = mock(DialogStage.class);
-    doReturn(dialogStage).when(context).getBean(Stages.MAIN, DialogStage.class);
-    doReturn(authStageMock).when(context).getBean(Stages.GOOGLE_AUTH, DialogStage.class);
+    doReturn(stageMock).when(context).getBean(Stages.MAIN, DialogStage.class);
 
     // when
     subject.handleStage(givenUpdate, givenUser, bot);
 
     // then
-    verify(context).getBean(Stages.GOOGLE_AUTH, DialogStage.class);
-    verify(authStageMock).execute(givenUpdate, bot, givenUser);
+    verify(googleAuthStage).execute(givenUpdate, bot, givenUser);
   }
 
   @Test
@@ -218,13 +223,11 @@ class DialogStageHandlerTest {
     Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
     BotUser givenUser = getTestBotUser();
 
-    when(dialogStage.execute(givenUpdate, bot, givenUser))
+    when(stageMock.execute(givenUpdate, bot, givenUser))
         .thenThrow(new GoogleAuthenticationException("testMessage"))
         .thenReturn(null);
 
-    DialogStage authStageMock = mock(DialogStage.class);
-    doReturn(dialogStage).when(context).getBean(Stages.MAIN, DialogStage.class);
-    doReturn(authStageMock).when(context).getBean(Stages.GOOGLE_AUTH, DialogStage.class);
+    doReturn(stageMock).when(context).getBean(Stages.MAIN, DialogStage.class);
 
     // when
     subject.handleStage(givenUpdate, givenUser, bot);
@@ -233,8 +236,55 @@ class DialogStageHandlerTest {
     verify(subject, times(2)).handleStage(givenUpdate, givenUser, bot);
   }
 
+  @Test
+  @DisplayName("handleStage - sends message is sheets credentials not set")
+  void handleStage_whenSheetsNotSetUpException_shouldSendMessage()
+      throws TelegramApiException {
+    // given
+    String exceptionMessage = "testMessage";
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    BotUser givenUser = getTestBotUser();
+
+    SheetsNotSetUpException authException =
+        new SheetsNotSetUpException(exceptionMessage);
+    when(stageMock.execute(givenUpdate, bot, givenUser))
+        .thenThrow(authException)
+        .thenReturn(null);
+
+    doReturn(stageMock).when(context).getBean(Stages.MAIN, DialogStage.class);
+
+    // when
+    subject.handleStage(givenUpdate, givenUser, bot);
+
+    // then
+    verify(bot).execute(MessageBuilder.basicMessage(givenUser.getId(), exceptionMessage));
+  }
+
+  @Test
+  @DisplayName("handleStage - executes Sheets configuration if it's not set up")
+  void handleStage_whenSheetsNotSetUpException_shouldExecuteSheetsConfigurationStage()
+      throws TelegramApiException {
+    // given
+    Update givenUpdate = TelegramTestUpdate.getBasicMessageUpdate();
+    BotUser givenUser = getTestBotUser();
+    String nextStage = "stageNextAfterConfig";
+
+    when(stageMock.execute(givenUpdate, bot, givenUser))
+        .thenThrow(new SheetsNotSetUpException("testMessage"));
+
+    doReturn(stageMock).when(context).getBean(Stages.MAIN, DialogStage.class);
+    doReturn(nextStage).when(sheetsConfigStage).execute(any(), any(), any());
+
+    // when
+    subject.handleStage(givenUpdate, givenUser, bot);
+
+    // then
+    verify(sheetsConfigStage).execute(givenUpdate, bot, givenUser);
+    verify(givenUser).setStageId(nextStage);
+  }
+
   private BotUser getTestBotUser() {
-    BotUser user = new BotUser();
+    BotUser user = spy(BotUser.class);
     user.setStageId(MAIN);
     user.setId(DEFAULT_USER_ID);
     return user;

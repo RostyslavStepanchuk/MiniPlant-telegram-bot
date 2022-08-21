@@ -23,7 +23,6 @@ public class AccountingRecordsGoogleSheetsRepo implements AccountingRecordsRepos
       DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
   private final GoogleServiceFactory googleServiceFactory;
-  private final SheetsTableCredentialsRepositoryImpl tableCredentialsRepo;
 
   @VisibleForTesting
   protected List<Object> toSheetsRow(AccountingRecord accountingRecord) {
@@ -38,9 +37,10 @@ public class AccountingRecordsGoogleSheetsRepo implements AccountingRecordsRepos
 
   @Override
   public AccountingRecord saveRecord(AccountingRecord accountingRecord) {
+
     Long userId = accountingRecord.getUser().getId();
-    SheetsTableCredentials tableCredentials = tableCredentialsRepo
-        .findByUserId(userId)
+    SheetsTableCredentials tableCredentials = accountingRecord.getUser()
+        .getSheetsTableCredentials()
         .orElseThrow(() -> new SheetsNotSetUpException(CANT_SAVE_SHEETS_NOT_CONFIGURED));
 
     GoogleSheetsClient sheetsService = googleServiceFactory

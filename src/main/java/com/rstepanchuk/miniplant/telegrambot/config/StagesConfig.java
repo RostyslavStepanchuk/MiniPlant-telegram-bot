@@ -8,9 +8,13 @@ import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageCategorySelec
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageGoogleAuth;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageIncomeOrExpense;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageMain;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageSheetIdSetup;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageSheetPageSetup;
+import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageSheetsConfig;
 import com.rstepanchuk.miniplant.telegrambot.bot.stages.DialogStageUndefined;
 import com.rstepanchuk.miniplant.telegrambot.google.auth.GoogleCredentialsManager;
 import com.rstepanchuk.miniplant.telegrambot.repository.MenuOptionsRepository;
+import com.rstepanchuk.miniplant.telegrambot.service.ConfigurationService;
 import com.rstepanchuk.miniplant.telegrambot.service.accounting.AccountingService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +23,10 @@ import org.springframework.context.annotation.Configuration;
 public class StagesConfig {
 
   @Bean(name = Stages.MAIN)
-  DialogStageMain dialogStageMain(DialogStageAmountInput dialogStageAmountInput) {
-    return new DialogStageMain(dialogStageAmountInput);
+  DialogStageMain dialogStageMain(
+      DialogStageAmountInput dialogStageAmountInput,
+      DialogStageSheetsConfig dialogStageSheetsConfig) {
+    return new DialogStageMain(dialogStageAmountInput, dialogStageSheetsConfig);
   }
 
   @Bean(name = Stages.UNDEFINED)
@@ -59,5 +65,22 @@ public class StagesConfig {
   DialogStageCategorySelection dialogStageCategorySelection(
       AccountingService accountingService) {
     return new DialogStageCategorySelection(accountingService);
+  }
+
+  @Bean(name = Stages.CONFIGURATIONS)
+  DialogStageSheetsConfig dialogStageCategorySelection() {
+    return new DialogStageSheetsConfig();
+  }
+
+  @Bean(name = Stages.SHEET_ID_SETUP)
+  DialogStageSheetIdSetup dialogStageCategorySelection(
+      ConfigurationService configurationService) {
+    return new DialogStageSheetIdSetup(configurationService);
+  }
+
+  @Bean(name = Stages.SHEET_PAGE_SETUP)
+  DialogStageSheetPageSetup dialogStageSheetPageSetup(
+      ConfigurationService configurationService) {
+    return new DialogStageSheetPageSetup(configurationService);
   }
 }

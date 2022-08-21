@@ -3,22 +3,38 @@ package com.rstepanchuk.miniplant.telegrambot.repository.mapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
+import com.rstepanchuk.miniplant.telegrambot.model.SheetsTableCredentials;
 import com.rstepanchuk.miniplant.telegrambot.repository.entity.BotUserEntity;
 import com.rstepanchuk.miniplant.telegrambot.repository.entity.MarkupMessageEntity;
+import com.rstepanchuk.miniplant.telegrambot.repository.entity.SheetsTableCredentialsEntity;
 import com.rstepanchuk.miniplant.telegrambot.util.Constants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class UserMapperTest {
 
   private static final Long ID = 1L;
   private static final String STAGE = Constants.Stages.MAIN;
 
+  @InjectMocks
   UserMapper subject = Mappers.getMapper(UserMapper.class);
+
+  @Mock
+  private SheetsTablesCredentialsMapper sheetsCredentialsMapper;
 
   @Test
   @DisplayName("toBotUser - copies all properties")
@@ -63,6 +79,23 @@ class UserMapperTest {
   }
 
   @Test
+  @DisplayName("toBotUser - copies mapped SheetsTableCredentials")
+  void toBotUser_shouldCopySheetsTableCredentials() {
+    BotUserEntity given = new BotUserEntity();
+    SheetsTableCredentialsEntity givenCredentials = mock(SheetsTableCredentialsEntity.class);
+    given.setSheetsCredentials(givenCredentials);
+
+    SheetsTableCredentials mappedCredentials = mock(SheetsTableCredentials.class);
+    doReturn(mappedCredentials).when(sheetsCredentialsMapper).toModel(any());
+
+    BotUser actual = subject.toBotUser(given);
+
+    assertTrue(actual.getSheetsTableCredentials().isPresent());
+    assertEquals(mappedCredentials, actual.getSheetsTableCredentials().get());
+    verify(sheetsCredentialsMapper).toModel(givenCredentials);
+  }
+
+  @Test
   @DisplayName("toBotUserEntity - copies all properties")
   void toBotUserEntity_copiesAllProperties() {
     // given
@@ -103,5 +136,21 @@ class UserMapperTest {
     MarkupMessageEntity actual2 = entity.getMessagesWithMarkup().get(1);
     assertEquals(messageId, actual1.getId());
     assertEquals(secondMessageId, actual2.getId());
+  }
+
+  @Test
+  @DisplayName("toBotUserEntity - copies mapped SheetsTableCredentialsEntity")
+  void toBotUserEntity_shouldCopySheetsTableCredentials() {
+    BotUser given = new BotUser();
+    SheetsTableCredentials givenCredentials = mock(SheetsTableCredentials.class);
+    given.setSheetsCredentials(givenCredentials);
+
+    SheetsTableCredentialsEntity mappedCredentials = mock(SheetsTableCredentialsEntity.class);
+    doReturn(mappedCredentials).when(sheetsCredentialsMapper).toEntity(any());
+
+    BotUserEntity actual = subject.toBotUserEntity(given);
+
+    assertEquals(mappedCredentials, actual.getSheetsCredentials());
+    verify(sheetsCredentialsMapper).toEntity(givenCredentials);
   }
 }

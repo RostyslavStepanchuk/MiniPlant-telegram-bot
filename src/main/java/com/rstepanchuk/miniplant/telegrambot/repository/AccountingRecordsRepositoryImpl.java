@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountingRecordsRepositoryImpl implements AccountingRecordsRepository {
 
   private final AccountingRecordsDao jpa;
-  private final AccountingRecordsGoogleSheetsRepo googleSheets;
+  private final AccountingRecordsRepository googleSheets;
   private final AccountingRecordMapper mapper;
 
   @Override

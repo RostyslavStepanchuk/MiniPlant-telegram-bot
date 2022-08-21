@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.exception.SheetsNotSetUpException;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleServiceFactory;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleSheetsClient;
@@ -34,39 +33,17 @@ class AccountingRecordsGoogleSheetsRepoTest {
   @Mock
   private GoogleServiceFactory googleServiceFactory;
 
-  @Mock
-  private SheetsTableCredentialsRepositoryImpl tableCredentialsRepository;
-
   @Test
-  @DisplayName("save - finds Sheets table by User ID")
-  void save_shouldFindSheetTableForUserByUserId() {
-    // given
-    Long givenUserId = 1L;
-    AccountingRecord given = new AccountingRecord();
-    BotUser givenUser = new BotUser();
-    givenUser.setId(givenUserId);
-    given.setUser(givenUser);
-    doReturn(Optional.of(new SheetsTableCredentials()))
-        .when(tableCredentialsRepository).findByUserId(givenUserId);
-    doReturn(mock(GoogleSheetsClient.class))
-        .when(googleServiceFactory).getSheetsService(givenUserId);
-    doReturn(null)
-        .when(subject).toSheetsRow(given);
-
-    // when & then
-    subject.saveRecord(given);
-    verify(tableCredentialsRepository).findByUserId(givenUserId);
-  }
-
-  @Test
-  @DisplayName("save - throws exception if Sheets table not found by ID ")
+  @DisplayName("save - throws exception if user has not sheets credentials ")
   void save_shouldThrowExceptionIfNoSheetsCredentialsForUser() {
     // given
     Long givenUserId = 1L;
     AccountingRecord given = new AccountingRecord();
     BotUser givenUser = new BotUser();
     givenUser.setId(givenUserId);
+    givenUser.setSheetsCredentials(null);
     given.setUser(givenUser);
+
 
     // when & then
     assertThrows(SheetsNotSetUpException.class, () -> subject.saveRecord(given));
@@ -80,9 +57,9 @@ class AccountingRecordsGoogleSheetsRepoTest {
     AccountingRecord given = new AccountingRecord();
     BotUser givenUser = new BotUser();
     givenUser.setId(givenUserId);
+    givenUser.setSheetsCredentials(mock(SheetsTableCredentials.class));
+
     given.setUser(givenUser);
-    doReturn(Optional.of(new SheetsTableCredentials()))
-        .when(tableCredentialsRepository).findByUserId(givenUserId);
     doReturn(mock(GoogleSheetsClient.class))
         .when(googleServiceFactory).getSheetsService(givenUserId);
     doReturn(null)
@@ -99,16 +76,15 @@ class AccountingRecordsGoogleSheetsRepoTest {
   void save_shouldAppendDataToSheetsRow() {
     // given
     Long givenUserId = 1L;
+    SheetsTableCredentials credentials = mock(SheetsTableCredentials.class);
     AccountingRecord given = new AccountingRecord();
     BotUser givenUser = new BotUser();
     givenUser.setId(givenUserId);
+    givenUser.setSheetsCredentials(credentials);
     given.setUser(givenUser);
     List<Object> rowDataMock = List.of("testValue");
     GoogleSheetsClient sheetsServiceMock = mock(GoogleSheetsClient.class);
-    SheetsTableCredentials sheetPageEntity = new SheetsTableCredentials();
 
-    doReturn(Optional.of(sheetPageEntity))
-        .when(tableCredentialsRepository).findByUserId(givenUserId);
     doReturn(sheetsServiceMock)
         .when(googleServiceFactory).getSheetsService(givenUserId);
     doReturn(rowDataMock)
@@ -118,7 +94,7 @@ class AccountingRecordsGoogleSheetsRepoTest {
     AccountingRecord actual = subject.saveRecord(given);
     // then
     assertEquals(given, actual);
-    verify(sheetsServiceMock).appendRow(sheetPageEntity, rowDataMock);
+    verify(sheetsServiceMock).appendRow(credentials, rowDataMock);
     verify(subject).toSheetsRow(given);
 
   }
