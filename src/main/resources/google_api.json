@@ -8,7 +8,7 @@
     "client_secret": null,
     "redirect_uris": [
       "urn:ietf:wg:oauth:2.0:oob",
-      "http://localhost"
+      "https://mini-plant-telegram-bot.herokuapp.com/"
     ]
   }
 }
