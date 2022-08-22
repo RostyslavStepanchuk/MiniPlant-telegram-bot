@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,8 +14,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.model.accounting.AccountingRecord;
-import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsGoogleSheets;
-import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsJpa;
+import com.rstepanchuk.miniplant.telegrambot.repository.dao.AccountingRecordsDao;
 import com.rstepanchuk.miniplant.telegrambot.repository.entity.AccountingRecordEntity;
 import com.rstepanchuk.miniplant.telegrambot.repository.mapper.AccountingRecordMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -36,10 +35,10 @@ class AccountingRecordsRepositoryImplTest {
   private AccountingRecordsRepositoryImpl subject;
 
   @Mock
-  private AccountingRecordsJpa jpa;
+  private AccountingRecordsDao jpa;
 
   @Mock
-  private AccountingRecordsGoogleSheets sheets;
+  private AccountingRecordsGoogleSheetsRepo sheets;
 
   @Mock
   private AccountingRecordMapper mapper;
@@ -52,7 +51,7 @@ class AccountingRecordsRepositoryImplTest {
     doReturn(true).when(subject).recordIsComplete(any());
     // when & then
     subject.saveRecord(givenRecord);
-    verify(sheets).save(givenRecord);
+    verify(sheets).saveRecord(givenRecord);
   }
 
   @Test
@@ -67,7 +66,7 @@ class AccountingRecordsRepositoryImplTest {
     subject.saveRecord(givenRecord);
 
     InOrder inOrder = Mockito.inOrder(jpa, sheets);
-    inOrder.verify(sheets).save(any());
+    inOrder.verify(sheets).saveRecord(any());
     inOrder.verify(jpa).deleteById(givenRecordId);
     verifyNoMoreInteractions(jpa);
   }

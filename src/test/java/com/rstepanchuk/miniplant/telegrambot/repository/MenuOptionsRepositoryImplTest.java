@@ -1,4 +1,4 @@
-package com.rstepanchuk.miniplant.telegrambot.repository.implementation;
+package com.rstepanchuk.miniplant.telegrambot.repository;
 
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.EXPENSES;
 import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Buttons.INCOME;

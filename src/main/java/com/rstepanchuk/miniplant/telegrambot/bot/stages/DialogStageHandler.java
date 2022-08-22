@@ -7,6 +7,7 @@ import static com.rstepanchuk.miniplant.telegrambot.util.Constants.Stages;
 import com.rstepanchuk.miniplant.telegrambot.bot.api.MessageBuilder;
 import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.GoogleAuthenticationException;
+import com.rstepanchuk.miniplant.telegrambot.exception.SheetsNotSetUpException;
 import com.rstepanchuk.miniplant.telegrambot.model.BotUser;
 import com.rstepanchuk.miniplant.telegrambot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,9 @@ public class DialogStageHandler {
 
   private final UserRepository userRepository;
   private final ApplicationContext context;
-  private final DialogStage defaultStage;
+  private final DialogStageUndefined defaultStage;
+  private final DialogStageGoogleAuth googleAuthStage;
+  private final DialogStageSheetsConfig sheetsSetupStage;
 
   private DialogStage getStage(String stageName) {
     try {
@@ -50,9 +53,12 @@ public class DialogStageHandler {
     } catch (GoogleAuthenticationException e) {
       log.error("Google Authentication error: ", e);
       bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
-      DialogStage stage = getStage(Stages.GOOGLE_AUTH);
-      stage.execute(update, bot, user);
+      googleAuthStage.execute(update, bot, user);
       handleStage(update, user, bot);
+    } catch (SheetsNotSetUpException e) {
+      log.error("Google Sheets not set up error: ", e);
+      bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));
+      user.setStageId(sheetsSetupStage.execute(update, bot, user));
     } catch (ApplicationException e) {
       log.error("Application error: ", e);
       bot.execute(MessageBuilder.basicMessage(user.getId(), e.getMessage()));

@@ -15,6 +15,9 @@ public class Constants {
     public static final String ACCOUNT_SELECTION = "STAGE_ACCOUNT_SELECTION";
     public static final String CATEGORY_SELECTION = "STAGE_CATEGORY_SELECTION";
     public static final String GOOGLE_AUTH = "STAGE_GOOGLE_AUTH";
+    public static final String CONFIGURATIONS = "STAGE_CONFIGURATIONS";
+    public static final String SHEET_ID_SETUP = "STAGE_SHEET_ID_SETUP";
+    public static final String SHEET_PAGE_SETUP = "STAGE_SHEET_PAGE_SETUP";
   }
 
   @UtilityClass
@@ -27,8 +30,12 @@ public class Constants {
   @UtilityClass
   public static class Messages {
 
-    public static final String BOT_IS_ONLY_FOR_SPECIFIC_USERS = "Я був створений тільки для"
-        + " власниці Mini Plant. На жаль я не зможу тобі допомогти";
+    public static final String BOT_IS_ONLY_FOR_SPECIFIC_USERS = "Привіт! Я був створений тільки "
+        + "для власниці Mini Plant і соромлюсь спілкуватись із незнайомими. Але можеш зазирнути "
+        + "до нас в магазин:\n\nhttps://www.facebook.com/search/top?q=mini%20plant\n\n"
+        + "https://www.instagram.com/mi.ni"
+        + ".plant/?fbclid=IwAR2tfZ1gCN8PZhd9PIhyDs2LjqIcTvU36PdczIwIBtRlrCM5-KC570Sy89E\n\n"
+        + "Впевнений, тобі будуть раді!";
     public static final String STAGE_UNKNOWN = "Я заплутався, на чому ми зупинились. Давай "
         + "почнем з самого початку";
     public static final String STAGE_WILL_BE_RESET = "Давай почнем зпочатку";
@@ -44,8 +51,8 @@ public class Constants {
         + "табличках";
     public static final String FOLLOW_AUTH_URL = "Будь ласка, пройди за "
         + "посиланням і передай Google, що я від тебе";
-    public static final String SHEETS_NOT_SET_UP = "Я не можу знайти у себе, в яку табличку це "
-        + "записувати :(";
+    public static final String CANT_SAVE_SHEETS_NOT_CONFIGURED = "Я не можу зберегти запис - не "
+        + "знаю, в яку табличку записувати. Давай налаштуємо і спробуємо ще раз";
     public static final String CANT_APPEND_ROW = "Не виходить вставити рядок в Google Sheets. "
         + "Я не винний (хочеться вірити)";
     public static final String NUMBER_INPUT_EXPECTED = "Не зрозумів. Я очікував, що ти напишеш "
@@ -64,6 +71,15 @@ public class Constants {
     public static final String SELECT_EXPENSE_ACCOUNT = "Як сплатили?";
     public static final String SELECT_CATEGORY = "В яку категорію записати?";
     public static final String RECORD_SAVED = "Записав в табличку:\n";
+    public static final String PROVIDE_SHEETS_ID = "Відправ мені ID своєї google-таблички, "
+        + "в яку ведуться записи. "
+        + "Ти можеш знайти його, якщо зайдеш до таблиці, і подивишся у web-адресі:\n"
+        + "'docs.google.com/spreadsheets/d/{ОСЬДО_ID}/edit'";
+    public static final String PROVIDE_SHEETS_PAGE_NAME = "Ок, зберіг. Тепер напиши назву "
+        + "сторінки, або вибери один з варіантів:";
+    public static final String DEFAULT_SHEETS_PAGE = "♻️Журнал движения денег";
+    public static final String CONFIGURATION_COMPLETE = "Готово. Тепер можна зберігати записи";
+
 
   }
 }

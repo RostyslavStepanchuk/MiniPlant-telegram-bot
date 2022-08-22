@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "sheets_pages")
-public class SheetPageEntity {
+public class SheetsTableCredentialsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +27,4 @@ public class SheetPageEntity {
 
   @Column(name = "range")
   String range;
-
-  @OneToOne
-  @JoinColumn(name = "user_id_fk")
-  BotUserEntity user;
-
 }

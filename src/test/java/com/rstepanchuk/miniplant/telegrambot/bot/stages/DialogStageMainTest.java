@@ -31,6 +31,9 @@ class DialogStageMainTest {
   private DialogStageAmountInput dialogStageAmountInput;
 
   @Mock
+  private DialogStageSheetsConfig dialogStageSheetsConfig;
+
+  @Mock
   private TelegramLongPollingBot bot;
 
   @Test
@@ -70,7 +73,7 @@ class DialogStageMainTest {
 
     // when & then
     subject.execute(update, bot, givenUser);
-    verify(subject).startScenarioBasedOnInput(data);
+    verify(subject).getFirstStageOfInputScenario(data);
   }
 
   @Test
@@ -82,12 +85,28 @@ class DialogStageMainTest {
     BotUser givenUser = mock(BotUser.class);
 
     doNothing().when(subject).clearAllMarkups(any(), any());
-    doReturn(dialogStageAmountInput).when(subject).startScenarioBasedOnInput(any());
+    doReturn(dialogStageAmountInput).when(subject).getFirstStageOfInputScenario(any());
     doReturn(nextStage).when(dialogStageAmountInput).execute(any(), any(), any());
 
     // when & then
     String actual = subject.execute(update, bot, givenUser);
     verify(dialogStageAmountInput).execute(update, bot, givenUser);
     assertEquals(nextStage, actual);
+  }
+
+  @Test
+  @DisplayName("getFirstStageOfInputScenario - returns sheets setup for valid command")
+  void getFirstStageOfInputScenario_shouldExecuteDefinedStage() {
+    assertEquals(
+        dialogStageSheetsConfig,
+        subject.getFirstStageOfInputScenario(DialogStageMain.CONFIGURATION_COMMAND));
+  }
+
+  @Test
+  @DisplayName("getFirstStageOfInputScenario - returns dialogStageAmountInput by default")
+  void getFirstStageOfInputScenario_shouldReturnAmountInputStage() {
+    assertEquals(
+        dialogStageAmountInput,
+        subject.getFirstStageOfInputScenario(null));
   }
 }
