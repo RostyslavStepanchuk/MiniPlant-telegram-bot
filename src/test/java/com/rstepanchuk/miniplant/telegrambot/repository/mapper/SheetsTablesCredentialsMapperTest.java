@@ -34,6 +34,12 @@ class SheetsTablesCredentialsMapperTest {
   }
 
   @Test
+  @DisplayName("toModel - accepts null")
+  void toModel_shouldAcceptNull() {
+    assertNull(subject.toModel(null));
+  }
+
+  @Test
   @DisplayName("toEntity - copies all values")
   void toEntity_shouldCopyAllValues() {
     SheetsTableCredentials given = new SheetsTableCredentials();
@@ -51,6 +57,11 @@ class SheetsTablesCredentialsMapperTest {
     assertEquals(sheetId, actual.getSheetId());
     assertEquals(pageName, actual.getPageName());
     assertEquals(range, actual.getRange());
+  }
 
+  @Test
+  @DisplayName("toEntity - accepts null")
+  void toEntity_shouldAcceptNull() {
+    assertNull(subject.toEntity(null));
   }
 }
