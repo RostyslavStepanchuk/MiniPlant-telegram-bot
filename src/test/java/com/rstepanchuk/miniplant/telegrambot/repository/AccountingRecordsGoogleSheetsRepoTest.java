@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import com.rstepanchuk.miniplant.telegrambot.exception.ApplicationException;
 import com.rstepanchuk.miniplant.telegrambot.exception.SheetsNotSetUpException;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleServiceFactory;
 import com.rstepanchuk.miniplant.telegrambot.google.GoogleSheetsClient;
@@ -175,6 +176,15 @@ class AccountingRecordsGoogleSheetsRepoTest {
     doReturn(givenCategory).when(basicRecord).getAccount();
     doReturn(null).when(basicRecord).getCategory();
     assertThrows(NullPointerException.class, () -> subject.toSheetsRow(basicRecord));
+  }
+
+  @Test
+  @DisplayName("application exception thrown when non-implemented methods triggered")
+  void save_shouldNotifyThatMethodsNotImplemented() {
+    AccountingRecord givenRecord = new AccountingRecord();
+    BotUser givenUser = new BotUser();
+    assertThrows(ApplicationException.class, () -> subject.deleteRecord(givenRecord));
+    assertThrows(ApplicationException.class, () -> subject.getCurrentRecord(givenUser));
   }
 
 }

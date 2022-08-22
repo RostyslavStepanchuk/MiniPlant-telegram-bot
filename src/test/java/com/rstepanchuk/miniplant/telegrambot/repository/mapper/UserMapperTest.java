@@ -139,6 +139,14 @@ class UserMapperTest {
   }
 
   @Test
+  @DisplayName("toBotUserEntity - accepts nulls instead of MarkupMessagesEntities")
+  void toBotUserEntity_shouldAcceptNullMarkups() {
+    BotUser given = new BotUser();
+    given.setMessagesWithMarkup(null);
+    assertNull(subject.toBotUserEntity(given).getMessagesWithMarkup());
+  }
+
+  @Test
   @DisplayName("toBotUserEntity - copies mapped SheetsTableCredentialsEntity")
   void toBotUserEntity_shouldCopySheetsTableCredentials() {
     BotUser given = new BotUser();

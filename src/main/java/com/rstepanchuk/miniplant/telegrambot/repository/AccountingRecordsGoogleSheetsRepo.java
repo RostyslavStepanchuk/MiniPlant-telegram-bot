@@ -57,6 +57,6 @@ public class AccountingRecordsGoogleSheetsRepo implements AccountingRecordsRepos
 
   @Override
   public AccountingRecord getCurrentRecord(BotUser user) {
-    throw new ApplicationException("googleSheetsRepo.deleteRecord is not implemented");
+    throw new ApplicationException("googleSheetsRepo.getCurrentRecord is not implemented");
   }
 }
